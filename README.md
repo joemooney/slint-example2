@@ -1,0 +1,1 @@
+Ok, so after a long while playing with the MVC TODO example, I found the whole experience too cumbersome and I am punting to a simplified non-MVC implementation which is suitable for the simple UI that I want anyhow.
