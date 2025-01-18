@@ -57,8 +57,10 @@ export struct MissionSlintStruct {
 // }
 
 export component CreateMissionView {
-    callback cancel_create_mission();
+    callback cancel_operation();
     callback create_mission();
+    callback update_mission();
+    callback changed_field(string, string) -> bool;
     in-out property <int> index;
     in-out property <string> mode: "Create";
     in-out property <MissionSlintStruct> mission;
@@ -72,7 +74,7 @@ export component CreateMissionView {
                 accessible-label: @tr("Cancel New Mission Creation");
 
                 clicked => {
-                    cancel_create_mission();
+                    cancel_operation();
                     // root.reset();
                     // CreateMissionAdapter.back();
                 }
@@ -88,7 +90,11 @@ export component CreateMissionView {
                 primary: true;
 
                 clicked => {
-                    create_mission();
+                    if mode == "Create" {
+                        create_mission();
+                    } else {
+                        update_mission();
+                    }
                 }
             }
         }
@@ -112,6 +118,13 @@ export component CreateMissionView {
                         text: mission.mission-name;
                         placeholder-text: @tr("Mission Name (alphanumber, underscore, hyphen)");
                         accessible-label: mission-name-label.text;
+                        changed text => { 
+                            if changed_field("mission_name", self.text) {
+                                mission-name_label.color = Colors.black;
+                            } else {
+                                mission-name_label.color = Colors.red;
+                            }
+                        }
                     }
                 }
                 Row {

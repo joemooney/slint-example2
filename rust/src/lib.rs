@@ -2,19 +2,48 @@
 // #[cfg(target_arch = "wasm32")]
 // use wasm_bindgen::prelude::*;
 
-// pub mod mvc;
-// pub mod ui;
+pub mod mvc;
+pub mod util;
+pub mod ui;
 
 // mod callback;
 // pub use callback::*;
 pub use slint::*;
 
 // #[cfg_attr(target_arch = "wasm32", wasm_bindgen(start))]
-slint::include_modules!();
+// slint::include_modules!();
+
+fn init() -> ui::MainWindow {
+    let mission_repo = mvc::mission_repo();
+    let mission_controller = mvc::MissionListController::new(mission_repo);
+
+    // let mission_model = Rc::new(slint::VecModel::from())
+    let main_window = ui::MainWindow::new().unwrap();
+    main_window.set_missions(mission_controller.connector());
+
+    let ctrl = mission_controller.clone();
+    main_window.on_s2r_create_mission(move |mission|{
+        println!("create mission {:#?}", mission);
+        ctrl.create_mission(mission);
+    });
+
+    let ctrl = mission_controller.clone();
+    main_window.on_s2r_update_mission(move |index, mission|{
+        println!("update mission {:#?}", mission);
+        ctrl.update_mission(index as usize, mission);
+    });
+
+    let ctrl = mission_controller.clone();
+    main_window.on_s2r_check_mission_field(move |mission, field_name, value|{
+        println!("check mission field {:#?}", mission);
+        ctrl.check_mission_field(mission, field_name, value)
+    });
+
+    main_window
+}
 
 pub fn main() {
-    // let main_window = init();
-    let main_window = MainWindow::new().unwrap();
+    let main_window = init();
     main_window.run().unwrap();
 }
 

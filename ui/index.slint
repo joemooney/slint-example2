@@ -32,60 +32,6 @@ import { Tabs } from "tabs.slint";
 import { TabWidget } from "std-widgets.slint";
 import { Tab1 } from "tab1.slint";
 
-export global NavigationAdapter {
-    out property <int> current-page;
-
-    public function next-page() {
-        root.current-page += 1;
-    }
-
-    public function previous-page() {
-        root.current-page = max(0, root.current-page - 1);
-    }
-}
-
-export global MissionNavigationAdapter {
-    out property <int> current-page;
-    in-out property <int> current-mission;
-
-    public function next-page() {
-        debug("mission next page");
-        root.current-page += 1;
-    }
-
-    public function previous-page() {
-        debug("mission prev page");
-        root.current-page = max(0, root.current-page - 1);
-    }
-}
-
-export global PowerPresetNavigationAdapter {
-    out property <int> current-page;
-    in-out property <int> current-power-preset;
-
-    public function next-page() {
-        root.current-page += 1;
-    }
-
-    public function previous-page() {
-        root.current-page = max(0, root.current-page - 1);
-    }
-}
-
-export global FrequencyPresetNavigationAdapter {
-    out property <int> current-page;
-    in-out property <int> current-frequency-preset;
-
-    public function next-page() {
-        debug("frequency preset next page");
-        root.current-page += 1;
-    }
-
-    public function previous-page() {
-        debug("frequency preset prev page");
-        root.current-page = max(0, root.current-page - 1);
-    }
-}
 
 export component MainWindow inherits Window {
     preferred-width: 600px;
@@ -96,11 +42,18 @@ export component MainWindow inherits Window {
     in-out property <bool> show_mission_list: true;
     in-out property <[MissionSlintStruct]> missions: [
         // this is only dummy data for the preview
-        { mission_name: "mission1", mission_desc: "mission#1", mission_id: 1, mission_details: "Nominal|band1" },
-        { mission_name: "mission2", mission_desc: "mission#2", mission_id: 2, mission_details: "Nominal|band2" },
-        { mission_name: "mission3", mission_desc: "mission#3", mission_id: 3, mission_details: "Nominal|band3" },
+        { mission_name: "dummy_mission1", mission_desc: "mission#1", mission_id: 1, mission_details: "Nominal|band1" },
+        { mission_name: "dummy_mission2", mission_desc: "mission#2", mission_id: 2, mission_details: "Nominal|band2" },
+        { mission_name: "dummy_mission3", mission_desc: "mission#3", mission_id: 3, mission_details: "Nominal|band3" },
     ];
     in-out property <MissionSlintStruct> mission: { mission_name: "mission?", mission_desc: "mission#1", mission_id: 1, mission_details: "Nominal|band1" };
+
+    callback create_mission();
+    callback update_mission();
+    // callback changed_field(string, string) -> bool;
+    callback s2r_check_mission_field(MissionSlintStruct, string, string) -> MissionSlintStruct;
+    callback s2r_create_mission(MissionSlintStruct);
+    callback s2r_update_mission(int, MissionSlintStruct);
 
     // Tabs {}
     TabWidget {
@@ -111,16 +64,10 @@ export component MainWindow inherits Window {
         Tab {
             title: "Missions";
             Rectangle {
-                // border-color: yellow;
-                // border-width: 10px;
-                // padding: 30px;
-                // x: -(MissionNavigationAdapter.current-page * root.width);
-                // width: 2 * root.width;
-
-                // if self.x > -root.width : MissionListView {
-                // if MissionNavigationAdapter.current-page == 0  : MissionListView {
                 if show_mission_list  : mission_list_view := MissionListView {
                     missions <=> missions;
+                    width: 100%;
+                    height: 100%;
                     show_edit_mission(idx) => {
                         debug("Edit mission", idx);
                         mission_index = idx;
@@ -133,37 +80,31 @@ export component MainWindow inherits Window {
                         show_mission_list = false;
                         mission_mode = "Create";
                     }
-                    width: 100%;
-                    height: 100%;
-                    // x: 0 + 10px;
-                    // y: 10px;
-                    // // padding: 20px;
-                    // width: root.width - 20px;
-                    // height: root.height - 35px;
                 }
 
-                // if self.x < 0 : CreateMissionView {
-                // if MissionNavigationAdapter.current-page == 1  : CreateMissionView {
                 if !show_mission_list  : create_mission_view := CreateMissionView {
                     mode <=> mission_mode;
                     mission <=> mission;
                     width: 100%;
                     height: 100%;
-                    cancel_create_mission => {
+                    cancel_operation => {
                         show_mission_list = true;
                     }
                     create_mission => {
+                        debug("index.slint create mission", mission);
+                        s2r_create_mission(mission);
                         show_mission_list = true;
                     }
-                    // x: root.width + 20px;
-                    // y: 10px;
-                    // width: root.width - 40px;
-                    // height: root.height - 35px;
-                }
-
-                animate x {
-                    duration: AnimationSettings.move-duration;
-                    easing: AnimationSettings.move-easing;
+                    update_mission => {
+                        debug("index.slint update mission", mission);
+                        s2r_update_mission(mission_index, mission);
+                        show_mission_list = true;
+                    }
+                    changed_field(field_name, value) => {
+                        debug("index.slint update mission", mission);
+                        mission = s2r_check_mission_field(mission, field_name, value);
+                        return true;
+                    }
                 }
             }
         }
