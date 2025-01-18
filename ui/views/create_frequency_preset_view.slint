@@ -1,0 +1,221 @@
+import { ComboBox, LineEdit, VerticalBox, Button, SpinBox, TextEdit } from "std-widgets.slint";
+import { MyComboBox } from "../common.slint";
+import { IconButton } from "../widgets/icon_button.slint";
+import { TextButton } from "../widgets/text_button.slint";
+import { Icons, FontSettings, TodoPalette, SpaceSettings } from "../widgets/styling.slint";
+import { FrequencyPresetAdapter } from "../adapters/frequency_adapter.slint";
+
+// @rust-attr(derive(serde::Serialize, serde::Deserialize))
+// export struct FrequencyPresetSlintStruct {
+//     preset_name: string,
+//     preset_desc: string,
+//     preset_details: string,
+//     checked: bool,
+//     freq1: float,
+//     freq2: float,
+//     freq3: string,
+// }
+
+// export global FrequencyPresetAdapter {
+//     in-out property <int> index;  /* row if we are editing */
+//     in-out property <string> mode: "Create";  /* changes to Update if we are editing */
+//     in-out property <FrequencyPresetSlintStruct> preset;  /* changes to Update if we are editing */
+//     // in-out property <string> preset-name: 0;
+//     // in-out property <string> preset-desc: 0;
+//     // in-out property <float> freq1: 0;
+//     // in-out property <float> freq2: 0;
+//     // in-out property <string> freq3: "";
+
+//     // callback create(
+//     //     /* preset-name */ string, 
+//     //     /* preset-desc */ string, 
+//     //     /* freq1 */ float,
+//     //     /* freq2 */ float,
+//     //     /* freq3_csv_list */ string,
+//     //     );
+//     // callback update(
+//     //     /* index */ int, 
+//     //     /* preset-name */ string, 
+//     //     /* preset-desc */ string, 
+//     //     /* freq1 */ float,
+//     //     /* freq2 */ float,
+//     //     /* freq3_csv_list */ string,
+//     //     );
+//     callback create(
+//         /* preset */ FrequencyPresetSlintStruct, 
+//         );
+//     callback update(
+//         /* index */ int, 
+//         /* preset */ FrequencyPresetSlintStruct, 
+//         );
+//     callback back();
+//     pure callback validate_preset-name(string) -> bool;
+//     pure callback validate_freq3(string) -> bool;
+
+// }
+
+export component CreateFrequencyPresetView {
+    VerticalBox {
+        padding: 10px;
+        alignment: start;
+         HorizontalLayout {
+            IconButton {
+                icon: Icons.close;
+                accessible-label: @tr("Cancel Operation");
+
+                clicked => {
+                    root.reset();
+                    FrequencyPresetAdapter.back();
+                }
+            }
+
+            // spacer
+            Rectangle { }
+
+
+            Button {
+                text: FrequencyPresetAdapter.mode;
+                enabled: preset-name-input.text != "";
+                primary: true;
+
+                clicked => {
+                    if FrequencyPresetAdapter.mode == "Create" {
+                        root.create();
+                    } else {
+                        root.update();
+                    }
+                }
+            }
+        }
+
+        VerticalLayout {
+            spacing: SpaceSettings.default-spacing;
+
+            preset-name-label := Text {
+                text: @tr("FrequencyPreset name");
+                color: TodoPalette.foreground;
+                font-size: FontSettings.body-strong.font-size;
+                font-weight: FontSettings.body-strong.font-weight;
+                horizontal-alignment: left;
+                overflow: elide;
+            }
+
+            Rectangle { } // spacer
+            preset-name-input := LineEdit {
+                text: FrequencyPresetAdapter.preset.preset-name;
+                placeholder-text: @tr("FrequencyPreset Name (alphanumber, underscore, hyphen)");
+                accessible-label: preset-name-label.text;
+            }
+
+            preset-desc-label := Text {
+                text: @tr("FrequencyPreset Description");
+                color: TodoPalette.foreground;
+                font-size: FontSettings.body-strong.font-size;
+                font-weight: FontSettings.body-strong.font-weight;
+                horizontal-alignment: left;
+                overflow: elide;
+            }
+
+            Rectangle { } // spacer
+            preset-desc-input := LineEdit {
+                text: FrequencyPresetAdapter.preset.preset-desc;
+                placeholder-text: @tr("FrequencyPreset Description");
+                accessible-label: preset-desc-label.text;
+            }
+
+            freq1-label := Text {
+                text: @tr("FrequencyPreset1");
+                color: TodoPalette.foreground;
+                font-size: FontSettings.body-strong.font-size;
+                font-weight: FontSettings.body-strong.font-weight;
+                horizontal-alignment: left;
+                overflow: elide;
+            }
+            Rectangle { } // spacer
+            freq1-input := SpinBox {
+                value: FrequencyPresetAdapter.preset.freq1;
+                minimum: -34.5;
+                maximum: 34.5;
+                accessible-label: freq1-label.text;
+            }
+
+            freq2-label := Text {
+                text: @tr("FrequencyPreset1");
+                color: TodoPalette.foreground;
+                font-size: FontSettings.body-strong.font-size;
+                font-weight: FontSettings.body-strong.font-weight;
+                horizontal-alignment: left;
+                overflow: elide;
+            }
+            Rectangle { } // spacer
+            freq2-input := SpinBox {
+                value: FrequencyPresetAdapter.preset.freq2;
+                minimum: -34.5;
+                maximum: 34.5;
+                accessible-label: freq2-label.text;
+            }
+
+            freq3-label := Text {
+                text: @tr("FrequencyPreset3");
+                color: TodoPalette.foreground;
+                font-size: FontSettings.body-strong.font-size;
+                font-weight: FontSettings.body-strong.font-weight;
+                horizontal-alignment: left;
+                overflow: elide;
+            }
+            Rectangle { } // spacer
+            freq3-input := TextEdit {
+                text: FrequencyPresetAdapter.preset.freq3;
+                accessible-label: freq3-label.text;
+            }
+
+            Rectangle { }
+        }
+    }
+
+    function reset() {
+        preset-name-input.text = "";
+        preset-desc-input.text = "";
+        freq1-input.value = 0;
+        freq2-input.value = 0;
+        freq3-input.text = "1800,1805";
+    }
+
+
+    function update() {
+        FrequencyPresetAdapter.back();
+        // FrequencyPresetAdapter.update(
+        //     FrequencyPresetAdapter.index,
+        //     preset-name-input.text, 
+        //     preset-desc-input.text, 
+        //     freq1-input.value, 
+        //     freq2-input.value,
+        //     freq3-input.text
+        //     );
+        FrequencyPresetAdapter.update(
+            FrequencyPresetAdapter.index,
+            FrequencyPresetAdapter.preset,
+            // preset-name-input.text, 
+            // preset-desc-input.text, 
+            // freq1-input.value, 
+            // freq2-input.value,
+            // freq3-input.text
+            );
+        root.reset();
+    }
+
+    function create() {
+        FrequencyPresetAdapter.back();
+        // FrequencyPresetAdapter.create(
+        //     preset-name-input.text, 
+        //     preset-desc-input.text, 
+        //     freq1-input.value, 
+        //     freq2-input.value, 
+        //     freq3-input.text, 
+        // );
+        FrequencyPresetAdapter.create(
+            FrequencyPresetAdapter.preset,
+        );
+        root.reset();
+    }
+}

@@ -1,0 +1,256 @@
+import { ComboBox, LineEdit, VerticalBox, Button, SpinBox, HorizontalBox } from "std-widgets.slint";
+import { MyComboBox } from "../common.slint";
+import { MyPowerValue } from "../widgets/my_power_value.slint";
+import { IconButton } from "../widgets/icon_button.slint";
+import { TextButton } from "../widgets/text_button.slint";
+import { Icons, FontSettings, TodoPalette, SpaceSettings } from "../widgets/styling.slint";
+import { PowerPresetAdapter } from "../adapters/power_adapter.slint";
+import { MissionAdapter } from "../adapters/mission_adapter.slint";
+
+
+export component PowerPresetValuesView {
+    property <string> preset-name-label: "Name";
+    property <string> preset-name-desc: "Description";
+    property <string> valid_power1_label: "Power1";
+    property <string> valid_power2_label: "Power2";
+    property <string> valid_power3_label: "Power3";
+    property <string> valid_power4_label: "Power4";
+    property <string> valid_power5_label: "Power5";
+    property <string> valid_power6_label: "Power6";
+    property <string> valid_power7_label: "Power7";
+    property <string> valid_power8_label: "Power8";
+    property <string> valid_power9_label: "Power9";
+    property <string> valid_power10_label: "Power10";
+
+    VerticalBox {
+        padding: 10px;
+        alignment: start;
+        GridLayout {
+            Row {
+                HorizontalBox {
+                    colspan: 2;
+                    power-preset-label := Text {
+                        horizontal-alignment: left;
+                        text: @tr("Power Preset");
+                        color: TodoPalette.foreground;
+                        font-size: FontSettings.body-strong.font-size;
+                        font-weight: FontSettings.body-strong.font-weight;
+                        overflow: elide;
+                    }
+                    power-preset-input := ComboBox {
+                        current-value: MissionAdapter.mission.power-model.preset-name;
+                        model: [@tr("Nominal"), @tr("HighAssurance"), @tr("Secret")];
+                        changed  current-value => {
+                            MissionAdapter.change_power_preset(self.current-value);
+                        }
+                    }
+                }
+            }
+            Row {
+                    power1-input := MyPowerValue {
+                        label: @tr("Power1");
+                        value: PowerPresetAdapter.preset.power1;
+                        minimum: -34.5;
+                        maximum: 34.5;
+                        // accessible-label: power1-label.text;
+                        changed_value => {
+                            PowerPresetAdapter.change_power1(self.value);
+                            // validate();
+                        }
+                        // width: 150px;
+                    }
+                    power2-input := MyPowerValue {
+                        value: PowerPresetAdapter.preset.power2;
+                        minimum: -34.5;
+                        maximum: 34.5;
+                        // accessible-label: power2-label.text;
+                        changed value => {
+                            PowerPresetAdapter.change_power2(self.value);
+                            // validate();
+                        }
+                        // width: 150px;
+                    }
+            }
+            Row {
+                    power3-input := MyPowerValue {
+                        value: PowerPresetAdapter.preset.power3;
+                        minimum: -34.5;
+                        maximum: 34.5;
+                        // accessible-label: power3-label.text;
+                        changed value => {
+                            PowerPresetAdapter.change_power3(self.value);
+                            // validate();
+                        }
+                        // width: 150px;
+                    }
+                    power4-input := MyPowerValue {
+                        value: PowerPresetAdapter.preset.power4;
+                        minimum: -34.5;
+                        maximum: 34.5;
+                        // accessible-label: power4-label.text;
+                        changed value => {
+                            PowerPresetAdapter.change_power4(self.value);
+                            // validate();
+                        }
+                        // width: 150px;
+                    }
+            }
+
+            Row {
+                    power5-input := MyPowerValue {
+                        value: PowerPresetAdapter.preset.power5;
+                        minimum: -34.5;
+                        maximum: 34.5;
+                        // accessible-label: power5-label.text;
+                        changed value => {
+                            PowerPresetAdapter.change_power5(self.value);
+                            // validate();
+                        }
+                    }
+                    power6-input := MyPowerValue {
+                        value: PowerPresetAdapter.preset.power6;
+                        minimum: -34.5;
+                        maximum: 34.5;
+                        // accessible-label: power6-label.text;
+                        changed value => {
+                            PowerPresetAdapter.change_power6(self.value);
+                            // validate();
+                        }
+                        // width: 150px;
+                    }
+            }
+
+            Row {
+                    power7-input := MyPowerValue {
+                        value: PowerPresetAdapter.preset.power7;
+                        minimum: -34.5;
+                        maximum: 34.5;
+                        // accessible-label: power7-label.text;
+                        changed value => {
+                            PowerPresetAdapter.change_power7(self.value);
+                            // validate();
+                        }
+                    }
+                    power8-input := MyPowerValue {
+                        value: PowerPresetAdapter.preset.power8;
+                        minimum: -34.5;
+                        maximum: 34.5;
+                        // accessible-label: power8-label.text;
+                        changed value => {
+                            PowerPresetAdapter.change_power8(self.value);
+                            // validate();
+                        }
+                        // width: 150px;
+                    }
+            }
+
+            Row {
+                power9-input := MyPowerValue {
+                    value: PowerPresetAdapter.preset.power9;
+                    minimum: -34.5;
+                    maximum: 34.5;
+                    // accessible-label: power9-label.text;
+                    changed value => {
+                        PowerPresetAdapter.change_power9(self.value);
+                        // validate();
+                    }
+                }
+                power10-input := MyPowerValue {
+                    value: PowerPresetAdapter.preset.power10;
+                    minimum: -34.5;
+                    maximum: 34.5;
+                    // accessible-label: power10-label.text;
+                    changed value => {
+                        PowerPresetAdapter.change_power10(self.value);
+                        // validate();
+                    }
+                    // width: 150px;
+                }
+            }
+        }
+    }
+
+    function reset() {
+        // preset-name-input.text = "";
+        // preset-desc-input.text = "";
+        power1-input.value = 0;
+        power2-input.value = 0;
+        power3-input.value = 0;
+        power4-input.value = 0;
+        power5-input.value = 0;
+        power6-input.value = 0;
+        power7-input.value = 0;
+        power8-input.value = 0;
+        power9-input.value = 0;
+        power10-input.value = 0;
+    }
+
+    function update() {
+        PowerPresetAdapter.back();
+        PowerPresetAdapter.update(
+            PowerPresetAdapter.index,
+            PowerPresetAdapter.preset);
+        root.reset();
+    }
+
+    function create() {
+        PowerPresetAdapter.back();
+        PowerPresetAdapter.create(
+            PowerPresetAdapter.preset);
+        root.reset();
+    }
+
+    // function validate() {
+    //     debug("checking valid values power1:"+power1-input.value+" > "+power1-input.minimum + " < " + power1-input.maximum);
+    //     if power1-input.value < power1-input.minimum || power1-input.value > power1-input.maximum {
+    //         power1-label.text = valid_power1_label + "[invalid value]";
+    //     } else {
+    //         power1-label.text = valid_power1_label + "foo";
+    //     }
+    //     if power2-input.value < power2-input.minimum || power2-input.value > power2-input.maximum {
+    //         power2-label.text = valid_power2_label + "[invalid value]";
+    //     } else {
+    //         power2-label.text = valid_power2_label;
+    //     }
+    //     if power3-input.value < power3-input.minimum || power3-input.value > power3-input.maximum {
+    //         power3-label.text = valid_power3_label + "[invalid value]";
+    //     } else {
+    //         power3-label.text = valid_power3_label;
+    //     }
+    //     if power4-input.value < power4-input.minimum || power4-input.value > power4-input.maximum {
+    //         power4-label.text = valid_power4_label + "[invalid value]";
+    //     } else {
+    //         power4-label.text = valid_power4_label;
+    //     }
+    //     if power5-input.value < power5-input.minimum || power5-input.value > power5-input.maximum {
+    //         power5-label.text = valid_power5_label + "[invalid value]";
+    //     } else {
+    //         power5-label.text = valid_power5_label;
+    //     }
+    //     if power6-input.value < power6-input.minimum || power6-input.value > power6-input.maximum {
+    //         power6-label.text = valid_power6_label + "[invalid value]";
+    //     } else {
+    //         power6-label.text = valid_power6_label;
+    //     }
+    //     if power7-input.value < power7-input.minimum || power7-input.value > power7-input.maximum {
+    //         power7-label.text = valid_power7_label + "[invalid value]";
+    //     } else {
+    //         power7-label.text = valid_power7_label;
+    //     }
+    //     if power8-input.value < power8-input.minimum || power8-input.value > power8-input.maximum {
+    //         power8-label.text = valid_power8_label + "[invalid value]";
+    //     } else {
+    //         power8-label.text = valid_power8_label;
+    //     }
+    //     if power9-input.value < power9-input.minimum || power9-input.value > power9-input.maximum {
+    //         power9-label.text = valid_power9_label + "[invalid value]";
+    //     } else {
+    //         power9-label.text = valid_power9_label;
+    //     }
+    //     if power10-input.value < power10-input.minimum || power10-input.value > power10-input.maximum {
+    //         power10-label.text = valid_power10_label + "[invalid value]";
+    //     } else {
+    //         power10-label.text = valid_power10_label;
+    //     }
+    // }
+}

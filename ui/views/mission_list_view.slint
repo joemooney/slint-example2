@@ -1,0 +1,94 @@
+import { VerticalBox } from "std-widgets.slint";
+import { MissionListView } from "../widgets/mission_list_view.slint";
+import { MissionSlintStruct } from "../adapters/mission_adapter.slint";
+export { MissionSlintStruct }
+
+import { ActionButton } from "../widgets/action_button.slint";
+import { Icons, FontSettings } from "../widgets/styling.slint";
+
+// export global MissionListAdapter {
+//     in-out property <[MissionSlintStruct]> missions: [
+//         // this is only dummy data for the preview
+//         { mission_name: "mission1", mission_desc: "mission#1", mission_id: 1, mission_details: "Nominal|band1" },
+//         { mission_name: "mission2", mission_desc: "mission#2", mission_id: 2, mission_details: "Nominal|band2" },
+//         { mission_name: "mission3", mission_desc: "mission#3", mission_id: 3, mission_details: "Nominal|band3" },
+//     ];
+
+//     callback toggle-mission-checked(/* index */ int);
+//     callback remove_mission(/* index */ int);
+//     callback show_edit_mission(/* index */ int);
+//     callback show_create_mission();
+
+//     // this is only a dummy implementation for the preview
+//     toggle-mission-checked(index) => {
+//         root.missions[index] = {
+//             mission_name: root.item(index).mission_name,
+//             mission_id: root.item(index).mission_id,
+//             mission_desc: root.item(index).mission_desc,
+//             mission_details: root.item(index).mission_details,
+//             checked: !root.item(index).checked
+//         };
+//     }
+
+//     function item(index: int) -> MissionSlintStruct {
+//         root.missions[index]
+//     }
+// }
+
+export component MissionListView {
+    in-out property <[MissionSlintStruct]> missions: [
+        // this is only dummy data for the preview
+        { mission_name: "dummy_mission1", mission_desc: "mission#1", mission_id: 1, mission_details: "Nominal|band1" },
+        { mission_name: "dummy_mission2", mission_desc: "mission#2", mission_id: 2, mission_details: "Nominal|band2" },
+        { mission_name: "dummy_mission3", mission_desc: "mission#3", mission_id: 3, mission_details: "Nominal|band3" },
+    ];
+    callback show_edit_mission(int);
+    callback show_create_mission();
+    callback remove_mission(int);
+
+    VerticalBox {
+        // vertical-stretch: 0;
+        // horizontal-stretch: 0;
+        padding-top: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-bottom: 10px;
+        Text {
+            text: "List of Power Missions";
+            horizontal-alignment: center;
+            font-size: FontSettings.title2-strong.font-size;
+        }
+        MissionListView {
+            width: 100%;
+            model: missions;
+            accessible-label: @tr("List of Missions");
+
+            // toggle(index) => {
+            //     MissionListAdapter.toggle-mission-checked(index);
+            // }
+
+            edit_mission(index) => {
+                // MissionListAdapter.show-edit-mission(index);
+                show_edit_mission(index)
+            }
+            remove(index) => {
+                remove_mission(index)
+                // MissionListAdapter.remove-mission(index);
+            }
+        }
+
+        HorizontalLayout {
+            alignment: center;
+
+            ActionButton {
+                icon: Icons.add;
+                accessible-label: @tr("Create New Mission");
+
+                clicked => {
+                    show_create_mission()
+                    // MissionListAdapter.show-create-mission();
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,214 @@
+import { SpinBox, Slider, Button, StandardButton, Switch, ComboBox, StandardListView, CheckBox, TabWidget, StandardButton, LineEdit, ScrollView } from "std-widgets.slint";
+//v2
+    //title: "General";
+
+export component Tab1 inherits Rectangle {
+    preferred-width: 600px;
+    preferred-height: 600px;
+    background: #061029;
+
+
+    property <string> density: "light";
+    property <int> density-value: 1;
+    property <string> name: "ZZZZZ";
+    property <int> age:22;
+    property <string> gender: "Male";
+    property <string> status: "Active";
+    property <string> age_error;
+    property <int> valid-age;
+
+    callback check-age(int);
+    check-age(age) => {
+        if (age > 65 || age < 18){
+            age_label.text = "Age(18-65)";
+            age_label.color = Colors.red;
+        } else {
+            age_label.text = "Age(18-65)";
+            age_label.color = Colors.white;
+        }
+    }
+    callback save_clicked();
+    
+    VerticalLayout {
+        padding: 10px;
+        ScrollView {
+            width: 100%;
+            viewport-width: 600px;
+            viewport-height: 600px;
+            VerticalLayout {
+                alignment: stretch;
+                spacing: 5px;
+                padding: 10px;
+                width: 100%;
+
+                Text {
+                    text: "Name:";
+                }
+
+                Rectangle {
+                    background: #162039;
+                    padding: 9px;
+                    height: 30px;
+                    TextInput {
+                        vertical-alignment: center;
+                        font-size: 14px;
+                        text: name;
+                    }
+                }
+
+                Text {
+                    text: "Description:";
+                }
+
+                LineEdit {
+
+                    font-size: 14px;
+                    enabled: true;
+                    // text: name;
+                    placeholder-text: "Enter name here";
+                }
+
+                HorizontalLayout {
+                    spacing: 15px;
+                    alignment: start;
+
+                    CheckBox {
+                        text: "Verified";
+                    }
+
+                    Switch {
+                        text: "Silent Mode";
+                    }
+                }
+
+                age_label := Text {
+                    text: "Age (18–65):";
+                }
+
+                SpinBox {
+                    value: age;
+                    // minimum: 18;
+                    // maximum: 65;
+                    // changed(v)  => {
+                    //     debug("hi:", v);
+                    // }
+                    changed value  => {
+                        debug("New value: ", self.value);
+                        check-age(self.value);
+                        
+                    }
+
+
+                    // => { check-age(); }
+                }
+
+                Text {
+                    text: "Gender:";
+                }
+
+                ComboBox {
+                    current-value: gender;
+                    model: ["Male", "Female", "N/A"];
+                }
+
+                Text {
+                    text: "Color:";
+                }
+
+                //VerticalLayout { 
+                    //height: parent.height - 200px;  
+                //     alignment: start;   
+                    Rectangle {
+                        
+                        //height: root.height - 300px;
+                        background: #162039;
+                        //preferred-height: 200px;
+                        height: 120px;
+                        //border-color: green;
+                        StandardListView {
+                            // preferred-height: 40px;
+                            model: [
+                                { text: "Blue" },
+                                { text: "Red" },
+                                { text: "Green" },
+                                { text: "Yellow" },
+                                { text: "Black" },
+                                { text: "White" },
+                                { text: "Magenta" },
+                                { text: "Cyan" },
+                            ];
+                        }
+                    //}
+                }
+            
+
+                Text {
+                    text: "Status:";
+                }
+
+                ComboBox {
+                    current-value: status;
+                    model: ["Active", "Inactive"];
+                }
+
+                Text {
+                    text: "Density: " + density;
+                }
+
+                Slider {
+                    minimum: 0;
+                    maximum: 5;
+                    // step: 1;
+                    value: density-value;
+                    changed(value) => {
+                        if (value < 0.5) {
+                            density = "None";
+                            self.value = 0;
+                        } else if (value < 1.5) {
+                            density = "Light";
+                            self.value = 1;
+                        } else {
+                            density = "Dense";
+                        }
+                    }
+                }
+            }
+        }
+        
+        Rectangle {
+            background: #0d0c2175;
+            border-radius: 20px;
+        
+            HorizontalLayout {
+                
+                padding: 10px;
+                spacing: 10px;
+                
+                StandardButton {
+                    //primary: true;
+                    //text: "Save";
+                    kind: reset;
+                    clicked => {
+                        root.save_clicked();
+                    }
+                }
+
+                StandardButton {
+                    kind: apply;
+                }
+
+                StandardButton {
+                    kind: cancel;
+                }
+
+                StandardButton {
+                    kind: ok;
+                }
+
+                StandardButton {
+                    kind: help;
+                }
+            }
+        }
+    }
+}

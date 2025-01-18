@@ -1,0 +1,148 @@
+//import { ComboBox, LineEdit, VerticalBox, Button, SpinBox } from "std-widgets.slint";
+//import { MyComboBox, MySpinBox } from "../common.slint";
+//import { IconButton } from "../widgets/icon_button.slint";
+//import { TextButton } from "../widgets/text_button.slint";
+//import { Icons, FontSettings, TodoPalette, SpaceSettings } from "../widgets/styling.slint";
+//import { CreateFrequencyPresetAdapter } from "create_frequency_preset_view.slint";
+
+@rust-attr(derive(serde::Serialize, serde::Deserialize))
+export struct PowerPresetSlintStruct {
+    preset_name: string,
+    preset_desc: string,
+    preset_details: string,
+    checked: bool,
+    power1: float,
+    power2: float,
+    power3: float,
+    power4: float,
+    power5: float,
+    power6: float,
+    power7: float,
+    power8: float,
+    power9: int,
+    power10: int,
+}
+
+export global PowerPresetAdapter {
+    in-out property <int> index;  /* row if we are editing */
+    in-out property <string> mode: "Create";  /* changes to Update if we are editing */
+    in-out property <PowerPresetSlintStruct> preset;  /* changes to Update if we are editing */
+
+    // in-out property <float> power2: 0;
+    // in-out property <float> power3: 0;
+    // in-out property <float> power4: 0;
+    // in-out property <float> power5: 0;
+    // in-out property <float> power6: 0;
+    // in-out property <float> power7: 0;
+    // in-out property <float> power8: 0;
+    // in-out property <int> power9: 0;
+    // in-out property <int> power10: 0;
+
+    // in-out property <string> preset-name: 0;
+    // in-out property <string> preset-desc: 0;
+    // in-out property <float> power1: 0;
+    // in-out property <float> power2: 0;
+    // in-out property <float> power3: 0;
+    // in-out property <float> power4: 0;
+    // in-out property <float> power5: 0;
+    // in-out property <float> power6: 0;
+    // in-out property <float> power7: 0;
+    // in-out property <float> power8: 0;
+    // in-out property <int> power9: 0;
+    // in-out property <int> power10: 0;
+
+    // callback create(
+    //     /* preset-name */ string, 
+    //     /* preset-desc */ string, 
+    //     /* power1 */ float,
+    //     /* power2 */ float,
+    //     /* power3 */ float,
+    //     /* power4 */ float,
+    //     /* power5 */ float,
+    //     /* power6 */ float,
+    //     /* power7 */ float,
+    //     /* power8 */ float,
+    //     /* power9 */ int,
+    //     /* power10 */ int, );
+
+    // callback update(
+    //     /* index */ int, 
+    //     /* preset-name */ string, 
+    //     /* preset-desc */ string, 
+    //     /* power1 */ float,
+    //     /* power2 */ float,
+    //     /* power3 */ float,
+    //     /* power4 */ float,
+    //     /* power5 */ float,
+    //     /* power6 */ float,
+    //     /* power7 */ float,
+    //     /* power8 */ float,
+    //     /* power9 */ int,
+    //     /* power10 */ int, );
+
+    callback create(
+        /* preset */ PowerPresetSlintStruct 
+       );
+
+    callback update(
+        /* index */ int, 
+        /* preset */ PowerPresetSlintStruct 
+       );
+
+    // function edit(
+    //     xreset_name: string, 
+    //     // preset-desc: string, 
+    //     // xower1: float,
+    //     // power2: float,
+    //     // power3: float,
+    //     // power4: float,
+    //     // power5: float,
+    //     // power6: float,
+    //     // power7: float,
+    //     // power8: float,
+    //     // power9: int,
+    //     // power10: int, 
+    //     ) {
+    //         preset-name = xreset_name;
+    // }
+    callback back();
+    pure callback validate_preset-name(string) -> int;
+
+    public function change_preset_desc(value: string) {
+        preset.preset-desc = value;
+    }
+    public function change_preset_name(value: string) {
+        preset.preset-name = value;
+    }
+    public function change_power1(value: float) {
+        preset.power1 = value;
+    }
+    public function change_power2(value: float) {
+        preset.power2 = value;
+    }
+    public function change_power3(value: float) {
+        preset.power4 = value;
+    }
+    public function change_power4(value: float) {
+        preset.power4 = value;
+    }
+    public function change_power5(value: float) {
+        preset.power5 = value;
+    }
+    public function change_power6(value: float) {
+        preset.power6 = value;
+    }
+    public function change_power7(value: float) {
+        preset.power7 = value;
+    }
+    public function change_power8(value: float) {
+        preset.power8 = value;
+    }
+    public function change_power9(value: float) {
+        preset.power9 = value;
+    }
+    public function change_power10(value: float) {
+        preset.power10 = value;
+    }
+}
+

@@ -1,0 +1,29 @@
+MainWindow := Window {
+    preferred-width: 400px;
+    preferred-height: 300px;
+
+    VerticalLayout {
+        Text { label: "Name"; input_text: text; }
+        Checkbox { label: "Privileged"; checkbox_checked: bool; }
+        RadioButton { text: "Full"; radio_button_selected: bool; }
+        RadioButton { text: "Partial"; radio_button_selected: bool; }
+        ComboBox { label: "Region"; combo_box_selected: ["Full", "Low", "Mid"]; }
+        CollapsiblePanel {
+            label: "Advanced Options";
+            ColumnLayout {
+                columns: 2;
+                Text { label: "A"; }
+                Text { label: "B"; }
+                Text { label: "C"; }
+                Text { label: "D"; }
+                Text { label: "E"; }
+                Text { label: "F"; }
+            }
+            Button { text: "Wizard"; }
+        }
+        HorizontalLayout {
+            Button { text: "Cancel"; }
+            Button { text: "Submit"; clicked => { on_submit(); } }
+        }
+    }
+}

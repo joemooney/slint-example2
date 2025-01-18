@@ -1,0 +1,55 @@
+//import { ComboBox, LineEdit, VerticalBox, Button, SpinBox, TextEdit } from "std-widgets.slint";
+//import { MyComboBox } from "../common.slint";
+//import { IconButton } from "../widgets/icon_button.slint";
+//import { TextButton } from "../widgets/text_button.slint";
+//import { Icons, FontSettings, TodoPalette, SpaceSettings } from "../widgets/styling.slint";
+
+@rust-attr(derive(serde::Serialize, serde::Deserialize))
+export struct FrequencyPresetSlintStruct {
+    preset_name: string,
+    preset_desc: string,
+    preset_details: string,
+    checked: bool,
+    freq1: float,
+    freq2: float,
+    freq3: string,
+}
+
+export global FrequencyPresetAdapter {
+    in-out property <int> index;  /* row if we are editing */
+    in-out property <string> mode: "Create";  /* changes to Update if we are editing */
+    in-out property <FrequencyPresetSlintStruct> preset;  /* changes to Update if we are editing */
+    // in-out property <string> preset-name: 0;
+    // in-out property <string> preset-desc: 0;
+    // in-out property <float> freq1: 0;
+    // in-out property <float> freq2: 0;
+    // in-out property <string> freq3: "";
+
+    // callback create(
+    //     /* preset-name */ string, 
+    //     /* preset-desc */ string, 
+    //     /* freq1 */ float,
+    //     /* freq2 */ float,
+    //     /* freq3_csv_list */ string,
+    //     );
+    // callback update(
+    //     /* index */ int, 
+    //     /* preset-name */ string, 
+    //     /* preset-desc */ string, 
+    //     /* freq1 */ float,
+    //     /* freq2 */ float,
+    //     /* freq3_csv_list */ string,
+    //     );
+    callback create(
+        /* preset */ FrequencyPresetSlintStruct, 
+        );
+    callback update(
+        /* index */ int, 
+        /* preset */ FrequencyPresetSlintStruct, 
+        );
+    callback back();
+    pure callback validate_preset-name(string) -> bool;
+    pure callback validate_freq3(string) -> bool;
+
+}
+

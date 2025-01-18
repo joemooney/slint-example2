@@ -1,0 +1,64 @@
+import { VerticalBox, LineEdit } from "std-widgets.slint";
+export component Example inherits Window {
+    width: 600px;
+    height: 600px;
+    // forward-focus: my-key-handler1;
+    // my-key-handler1 := FocusScope {
+    //     key-pressed(event) => {
+    //         debug(event.text);
+    //         if (event.modifiers.control) {
+    //             debug("1 control was pressed during this event");
+    //         }
+    //         if (event.text == Key.Escape) {
+    //             debug("1 Esc key was pressed")
+    //         }
+    //         accept
+    //     }
+    // }
+    Rectangle {
+        width: 400px;
+        height: 400px;
+        background: blue;
+        // forward-focus: my-key-handler1;
+        VerticalLayout {
+            LineEdit {
+                
+                text: "enter text here12345677";
+                // placeholder-text: "foo";
+                // color: gold;
+                width: 200px;
+                // max-height: 40px;
+                max-height: self.font-size * 1.5;
+                // drop-shadow-color: red;
+                vertical-stretch: 0;
+                horizontal-alignment: left;
+                // vertical-alignment: left;
+                // height: 40px;
+                font-size: 30px;
+                // width: 100px;
+                enabled: true;
+            }
+            Rectangle { height: 10px;}
+            TextInput {
+                
+                text: "Enter text there";
+                color: gold;
+                font-size: 30px;
+                width: 100px;
+            }
+        }
+        // forward-focus: my-key-handler2;
+        // my-key-handler2 := FocusScope {
+        //     key-pressed(event) => {
+        //         // debug(event.text);
+        //         if (event.modifiers.control) {
+        //             debug("2 control was pressed during this event");
+        //         }
+        //         if (event.text == Key.Escape) {
+        //             debug("2 Esc key was pressed")
+        //         }
+        //         accept
+        //     }
+        // }
+    }
+}

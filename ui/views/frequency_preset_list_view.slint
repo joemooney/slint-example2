@@ -1,0 +1,81 @@
+import { VerticalBox } from "std-widgets.slint";
+import { FrequencyPresetListView } from "../widgets/frequency_preset_list_view.slint";
+import { FrequencyPresetSlintStruct } from "../adapters/frequency_adapter.slint";
+export { FrequencyPresetSlintStruct }
+import { ActionButton } from "../widgets/action_button.slint";
+import { Icons, FontSettings } from "../widgets/styling.slint";
+
+export global FrequencyPresetListAdapter {
+    in-out property <[FrequencyPresetSlintStruct]> frequency_presets: [
+        // this is only dummy data for the preview
+        { preset_name: "frequency_preset1", preset_desc: "freq_preset#1", preset_details: "foo" },
+        { preset_name: "frequency_preset2", preset_desc: "freq_preset#2", preset_details: "foo" },
+        { preset_name: "frequency_preset3", preset_desc: "freq_preset#3", preset_details: "foo" },
+    ];
+
+    callback toggle-frequency_preset-checked(/* index */ int);
+    callback remove-frequency_preset(/* index */ int);
+    callback show-create-frequency_preset();
+    callback show-edit-frequency_preset(/* index */ int);
+
+    // this is only a dummy implementation for the preview
+    toggle-frequency_preset-checked(index) => {
+        root.frequency_presets[index] = {
+            preset_name: root.item(index).preset_name,
+            preset_desc: root.item(index).preset_desc,
+            preset_details: root.item(index).preset_details,
+            checked: !root.item(index).checked
+        };
+    }
+
+    function item(index: int) -> FrequencyPresetSlintStruct {
+        root.frequency_presets[index]
+    }
+}
+
+export component FrequencyPresetListView {
+    VerticalBox {
+        // vertical-stretch: 0;
+        // horizontal-stretch: 0;
+        padding-top: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-bottom: 10px;
+        Text {
+            text: "List of Frequency Presets";
+            horizontal-alignment: center;
+            font-size: FontSettings.title2-strong.font-size;
+        }
+
+        // instance of widges/frequency_preset_list_view.slint
+        FrequencyPresetListView {
+            width: 100%;
+            model: FrequencyPresetListAdapter.frequency_presets;
+            accessible-label: @tr("List of FrequencyPresets");
+
+            // toggle(index) => {
+            //     FrequencyPresetListAdapter.toggle-frequency_preset-checked(index);
+            // }
+            edit_preset(index) => {
+                debug("edit frequency preset");
+                FrequencyPresetListAdapter.show-edit-frequency-preset(index);
+            }
+            remove(index) => {
+                FrequencyPresetListAdapter.remove-frequency_preset(index);
+            }
+        }
+
+        HorizontalLayout {
+            alignment: center;
+
+            ActionButton {
+                icon: Icons.add;
+                accessible-label: @tr("Create New Frequency Preset");
+
+                clicked => {
+                    FrequencyPresetListAdapter.show-create-frequency_preset();
+                }
+            }
+        }
+    }
+}

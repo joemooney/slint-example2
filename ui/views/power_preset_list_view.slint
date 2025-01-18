@@ -1,0 +1,82 @@
+import { VerticalBox } from "std-widgets.slint";
+import { PowerPresetListView} from "../widgets/power_preset_list_view.slint";
+import { PowerPresetSlintStruct } from "../adapters/power_adapter.slint";
+export { PowerPresetSlintStruct }
+
+import { ActionButton } from "../widgets/action_button.slint";
+import { Icons, FontSettings } from "../widgets/styling.slint";
+
+export global PowerPresetListAdapter {
+    in property <int> font-size: 16;
+    in-out property <[PowerPresetSlintStruct]> xpower_presets: [
+        // this is only dummy data for the preview
+        { preset_name: "power_preset_1", preset_desc: "power_preset_#1", preset_details: "Power1details" },
+        { preset_name: "power_preset_2", preset_desc: "power_preset_#2", preset_details: "Power2details" },
+        { preset_name: "power_preset_3", preset_desc: "power_preset_#3", preset_details: "Power3details" },
+    ];
+
+    callback toggle-power-checked(/* index */ int);
+    callback remove-power-preset(/* index */ int);
+    callback show-create-power-preset();
+    callback show-edit-power-preset(/* index */ int);
+
+    // this is only a dummy implementation for the preview
+    toggle-power-checked(index) => {
+        root.xpower_presets[index] = {
+            preset_name: root.item(index).preset_name,
+            preset_desc: root.item(index).preset_desc,
+            preset_details: root.item(index).preset_details,
+            checked: !root.item(index).checked
+        };
+    }
+
+    function item(index: int) -> PowerPresetSlintStruct {
+        root.xpower_presets[index]
+    }
+}
+
+export component PowerPresetListView {
+    VerticalBox {
+        // vertical-stretch: 0;
+        // horizontal-stretch: 0;
+        padding-top: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-bottom: 10px;
+        Text {
+            text: "List of Power Presets";
+            horizontal-alignment: center;
+            font-size: FontSettings.title2-strong.font-size;
+        }
+
+        PowerPresetListView {
+            width: 100%;
+            xmodel: PowerPresetListAdapter.xpower_presets;
+            accessible-label: @tr("List of Power Presets");
+
+            // toggle(index) => {
+            //     PowerPresetListAdapter.toggle-power-checked(index);
+            // }
+
+            edit_preset(index) => {
+                PowerPresetListAdapter.show-edit-power-preset(index);
+            }
+            remove(index) => {
+                PowerPresetListAdapter.remove-power-preset(index);
+            }
+        }
+
+        HorizontalLayout {
+            alignment: center;
+
+            ActionButton {
+                icon: Icons.add;
+                accessible-label: @tr("Create New Power Preset");
+
+                clicked => {
+                    PowerPresetListAdapter.show-create-power-preset();
+                }
+            }
+        }
+    }
+}

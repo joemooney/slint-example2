@@ -1,0 +1,52 @@
+import { Button } from "std-widgets.slint";
+import { PowerPresetValuesView } from "../widgets/power_preset_values_view.slint";
+import { PowerPresetAdapter } from "../adapters/power_adapter.slint";
+
+// Accordion
+export component MissionPowerView inherits Rectangle {
+    border-width: 0px;
+    border-color: #ccc;
+    padding: 4px;
+    callback toggle_accordion();
+    in-out property <bool> is_accordion_expanded;
+    in-out property <string> preset_details;
+
+    VerticalLayout {
+        spacing: 4px;
+
+        Button {
+            text: is_accordion_expanded ? "Power Details" : "Power:" + PowerPresetAdapter.preset.preset-name;
+            clicked => { 
+                is_accordion_expanded = !is_accordion_expanded; 
+                if is_accordion_expanded {
+                    PowerPresetAdapter.mode = "MissionEdit";
+                } else {
+                    PowerPresetAdapter.mode = "";
+                }
+            }
+        }
+
+        if is_accordion_expanded: 
+            PowerPresetValuesView {}
+            // VerticalLayout {
+            //     spacing: 8px;
+
+            //     Text {
+            //         text: "Additional field 1";
+            //     }
+
+            //     Text {
+            //         text: "Additional field 2";
+            //     }
+
+            //     Text {
+            //         text: "Additional field 3";
+            //     }
+            // }
+        if ! is_accordion_expanded: 
+            preset_details-label := Text {
+                text: PowerPresetAdapter.preset.preset-desc;
+                // color: #888;
+            }
+    }
+}

@@ -1,0 +1,137 @@
+import { CheckBox, ListView, HorizontalBox } from "std-widgets.slint";
+import { StateLayer } from "./state_layer.slint";
+import { FocusTouchArea } from "./focus_touch_area.slint";
+import { SizeSettings, TodoPalette, FontSettings, Icons } from "styling.slint";
+import { IconButton } from "icon_button.slint";
+import { MissionSlintStruct } from "../views/create_mission_view.slint";
+
+export component MissionListViewItemDelegate {
+    callback toggle;
+    callback remove;
+    callback edit_mission;
+
+    in property <string> mission_name <=> mission_name-label.text;
+    in property <string> mission_desc<=> mission_desc-label.text;
+    in property <string> mission_details<=> mission_details-label.text;
+    in property <string> mission_id <=> mission_id-label.text;
+
+    in-out property <bool> checked <=> check-box.checked;
+
+    min-width: content-layer.min-width;
+    min-height: max(SizeSettings.control-height, content-layer.min-height);
+    forward-focus: touch-area;
+
+    touch-area := FocusTouchArea {
+        width: 100%;
+        height: 100%;
+
+        clicked => {
+            root.toggle();
+        }
+    }
+
+    StateLayer {
+        width: 100%;
+        height: 100%;
+        focus-padding: -1px;
+        pressed: touch-area.pressed || touch-area.enter-pressed;
+        has-focus: touch-area.has-focus;
+        has-hover: touch-area.has-hover;
+    }
+
+    content-layer := HorizontalBox {
+        accessible-role: list-item;
+        
+        check-box := CheckBox {
+            horizontal-stretch: 0;
+            y: (parent.height - self.height) / 2;
+            accessible-label: @tr("Mission Flagged");
+            toggled => {
+                root.toggle();
+            }
+            visible: false;
+        }
+
+        VerticalLayout {
+            alignment: center;
+            HorizontalLayout {
+                mission_id-label := Text {
+                    horizontal-alignment: left;
+                    color: TodoPalette.foreground;
+                    font-size: FontSettings.body-strong.font-size;
+                    font-weight: FontSettings.body-strong.font-weight;
+                    overflow: elide;
+                }
+                mission_name-label := Text {
+                    horizontal-alignment: left;
+                    color: TodoPalette.foreground;
+                    font-size: FontSettings.title1-strong.font-size;
+                    font-weight: FontSettings.body-strong.font-weight;
+                    overflow: elide;
+                }
+
+                mission_desc-label := Text {
+                    color: TodoPalette.foreground;
+                    font-size: FontSettings.body.font-size;
+                    font-weight: FontSettings.body.font-weight;
+                    overflow: elide;
+                }
+            }
+
+            mission_details-label := Text {
+                horizontal-alignment: left;
+                color: TodoPalette.foreground;
+                font-size: FontSettings.body-strong.font-size;
+                font-weight: FontSettings.body-strong.font-weight;
+                overflow: elide;
+            }
+
+        }
+
+        IconButton {
+            y: (parent.height - self.height) / 2;
+            icon: Icons.settings;
+            accessible-label: @tr("Edit Mission");
+            clicked => {
+                root.edit_mission();
+            }
+        }
+
+        IconButton {
+            y: (parent.height - self.height) / 2;
+            icon: Icons.remove;
+            accessible-label: @tr("Delete Mission");
+            clicked => {
+                root.remove();
+            }
+        }
+    }
+}
+
+export component MissionListView inherits ListView {
+    in property <[MissionSlintStruct]> model;
+
+    callback toggle(/* index */ int);
+    callback remove(/* index */ int);
+    callback edit_mission(/* index */ int);
+
+    accessible-role: list;
+
+    for item[index] in root.model: MissionListViewItemDelegate {
+        width: root.visible-width;
+        mission_name: item.mission_name;
+        mission_desc: item.mission_desc;
+        mission_details: item.mission_details;
+        mission_id: item.mission_id;
+        checked: item.checked;
+        toggle => {
+            root.toggle(index);
+        }
+        remove => {
+            root.remove(index);
+        }
+        edit_mission => {
+            root.edit_mission(index);
+        }
+    }
+}

@@ -1,0 +1,34 @@
+import { LineEdit } from "std-widgets.slint";
+// import { CreatePowerPresetView } from "../views/create_power_preset_view.slint";
+export component MyPowerValue inherits Rectangle {
+    border-width: 0px;
+    border-color: #ccc;
+    padding: 4px;
+    callback changed_value(string, string);
+    in-out property <int> minimum;
+    in-out property <int> maximum;
+    in-out property <int> value;
+    in-out property <bool> is_valid;
+    in-out property <string> label: "label";
+
+    HorizontalLayout {
+        alignment: start;
+        spacing: 4px;
+            Text {
+                min-width: 50px;
+                font-weight:  700;
+                vertical-alignment: center;
+                max-height: self.font-size * 1.5;
+                text: label;
+            }
+            LineEdit {
+                horizontal-alignment: left;
+                max-height: self.font-size * 1.5;
+                // max-width: 25px;
+                text: "0.0";
+                changed text => {
+                    changed_value(label, self.text);
+                }
+            }
+    }
+}

@@ -1,0 +1,268 @@
+// import { MissionListView, MissionListAdapter } from "./views/mission_list_view.slint";
+import { MissionListView } from "./views/mission_list_view.slint";
+// export { MissionListAdapter }
+
+import { CreateMissionView } from "./views/create_mission_view.slint";
+import { MissionAdapter, MissionSlintStruct } from "./adapters/mission_adapter.slint";
+export { MissionAdapter }
+
+import { PowerPresetListView, PowerPresetListAdapter } from "./views/power_preset_list_view.slint";
+export { PowerPresetListAdapter }
+
+import { CreatePowerPresetView } from "./views/create_power_preset_view.slint";
+import { PowerPresetAdapter } from "./adapters/power_adapter.slint";
+export { PowerPresetAdapter }
+
+import { FrequencyPresetListView } from "./views/frequency_preset_list_view.slint";
+import { FrequencyPresetListAdapter } from "./views/frequency_preset_list_view.slint";
+export { FrequencyPresetListAdapter }
+
+import { CreateFrequencyPresetView } from "./views/create_frequency_preset_view.slint";
+import { FrequencyPresetAdapter } from "./adapters/frequency_adapter.slint";
+export { FrequencyPresetAdapter }
+
+import { TaskListView, TaskListAdapter } from "./views/task_list_view.slint";
+export { TaskListAdapter }
+
+import { CreateTaskView, CreateTaskAdapter } from "./views/create_task_view.slint";
+export { CreateTaskAdapter }
+
+import { AnimationSettings } from "./widgets/styling.slint";
+import { Tabs } from "tabs.slint";
+import { TabWidget } from "std-widgets.slint";
+import { Tab1 } from "tab1.slint";
+
+export global NavigationAdapter {
+    out property <int> current-page;
+
+    public function next-page() {
+        root.current-page += 1;
+    }
+
+    public function previous-page() {
+        root.current-page = max(0, root.current-page - 1);
+    }
+}
+
+export global MissionNavigationAdapter {
+    out property <int> current-page;
+    in-out property <int> current-mission;
+
+    public function next-page() {
+        debug("mission next page");
+        root.current-page += 1;
+    }
+
+    public function previous-page() {
+        debug("mission prev page");
+        root.current-page = max(0, root.current-page - 1);
+    }
+}
+
+export global PowerPresetNavigationAdapter {
+    out property <int> current-page;
+    in-out property <int> current-power-preset;
+
+    public function next-page() {
+        root.current-page += 1;
+    }
+
+    public function previous-page() {
+        root.current-page = max(0, root.current-page - 1);
+    }
+}
+
+export global FrequencyPresetNavigationAdapter {
+    out property <int> current-page;
+    in-out property <int> current-frequency-preset;
+
+    public function next-page() {
+        debug("frequency preset next page");
+        root.current-page += 1;
+    }
+
+    public function previous-page() {
+        debug("frequency preset prev page");
+        root.current-page = max(0, root.current-page - 1);
+    }
+}
+
+export component MainWindow inherits Window {
+    preferred-width: 600px;
+    preferred-height: 600px;
+    title: "Radio Configuration Tool";
+    in-out property <string> mission_mode;
+    in-out property <int> mission_index;
+    in-out property <bool> show_mission_list: true;
+    in-out property <[MissionSlintStruct]> missions: [
+        // this is only dummy data for the preview
+        { mission_name: "mission1", mission_desc: "mission#1", mission_id: 1, mission_details: "Nominal|band1" },
+        { mission_name: "mission2", mission_desc: "mission#2", mission_id: 2, mission_details: "Nominal|band2" },
+        { mission_name: "mission3", mission_desc: "mission#3", mission_id: 3, mission_details: "Nominal|band3" },
+    ];
+    in-out property <MissionSlintStruct> mission: { mission_name: "mission?", mission_desc: "mission#1", mission_id: 1, mission_details: "Nominal|band1" };
+
+    // Tabs {}
+    TabWidget {
+        // Tab {
+        //     title: "General";
+        //     Tab1 {}
+        // }
+        Tab {
+            title: "Missions";
+            Rectangle {
+                // border-color: yellow;
+                // border-width: 10px;
+                // padding: 30px;
+                // x: -(MissionNavigationAdapter.current-page * root.width);
+                // width: 2 * root.width;
+
+                // if self.x > -root.width : MissionListView {
+                // if MissionNavigationAdapter.current-page == 0  : MissionListView {
+                if show_mission_list  : mission_list_view := MissionListView {
+                    missions <=> missions;
+                    show_edit_mission(idx) => {
+                        debug("Edit mission", idx);
+                        mission_index = idx;
+                        mission = missions[idx];
+                        debug("Edit mission", mission);
+                        show_mission_list = false;
+                        mission_mode = "Update";
+                    }
+                    show_create_mission => {
+                        show_mission_list = false;
+                        mission_mode = "Create";
+                    }
+                    width: 100%;
+                    height: 100%;
+                    // x: 0 + 10px;
+                    // y: 10px;
+                    // // padding: 20px;
+                    // width: root.width - 20px;
+                    // height: root.height - 35px;
+                }
+
+                // if self.x < 0 : CreateMissionView {
+                // if MissionNavigationAdapter.current-page == 1  : CreateMissionView {
+                if !show_mission_list  : create_mission_view := CreateMissionView {
+                    mode <=> mission_mode;
+                    mission <=> mission;
+                    width: 100%;
+                    height: 100%;
+                    cancel_create_mission => {
+                        show_mission_list = true;
+                    }
+                    create_mission => {
+                        show_mission_list = true;
+                    }
+                    // x: root.width + 20px;
+                    // y: 10px;
+                    // width: root.width - 40px;
+                    // height: root.height - 35px;
+                }
+
+                animate x {
+                    duration: AnimationSettings.move-duration;
+                    easing: AnimationSettings.move-easing;
+                }
+            }
+        }
+        // Tab {
+        //     title: "Power Presets";
+        //     Rectangle {
+        //         // border-color: yellow;
+        //         // border-width: 10px;
+        //         // padding: 30px;
+        //         x: -(PowerPresetNavigationAdapter.current-page * root.width);
+        //         width: 2 * root.width;
+
+        //         // if self.x > -root.width : MissionListView {
+        //         if PowerPresetNavigationAdapter.current-page == 0  : PowerPresetListView {
+        //             x: 0 + 10px;
+        //             y: 10px;
+        //             // padding: 20px;
+        //             width: root.width - 20px;
+        //             height: root.height - 35px;
+        //         }
+
+        //         // if self.x < 0 : CreateMissionView {
+        //         if PowerPresetNavigationAdapter.current-page == 1  : CreatePowerPresetView {
+        //             x: root.width + 20px;
+        //             y: 10px;
+        //             width: root.width - 40px;
+        //             height: root.height - 35px;
+        //         }
+
+        //         animate x {
+        //             duration: AnimationSettings.move-duration;
+        //             easing: AnimationSettings.move-easing;
+        //         }
+        //     }
+        // }
+        // Tab {
+        //     title: "Frequency Presets";
+        //     Rectangle {
+        //         // border-color: yellow;
+        //         // border-width: 10px;
+        //         // padding: 30px;
+        //         x: -(FrequencyPresetNavigationAdapter.current-page * root.width);
+        //         width: 2 * root.width;
+
+        //         // if self.x > -root.width : MissionListView {
+        //         if FrequencyPresetNavigationAdapter.current-page == 0  : FrequencyPresetListView {
+        //             x: 0 + 10px;
+        //             y: 10px;
+        //             // padding: 20px;
+        //             width: root.width - 20px;
+        //             height: root.height - 35px;
+        //         }
+
+        //         // if self.x < 0 : CreateMissionView {
+        //         if FrequencyPresetNavigationAdapter.current-page == 1  : CreateFrequencyPresetView {
+        //             x: root.width + 20px;
+        //             y: 10px;
+        //             width: root.width - 40px;
+        //             height: root.height - 35px;
+        //         }
+
+        //         animate x {
+        //             duration: AnimationSettings.move-duration;
+        //             easing: AnimationSettings.move-easing;
+        //         }
+        //     }
+        // }
+        // Tab {
+        //     title: "Test Tasks";
+        //     Rectangle {
+        //         // border-color: yellow;
+        //         // border-width: 10px;
+        //         // padding: 30px;
+        //         x: -(NavigationAdapter.current-page * root.width);
+        //         width: 2 * root.width;
+
+        //         // if self.x > -root.width : TaskListView {
+        //         if NavigationAdapter.current-page == 0  : TaskListView {
+        //             x: 0 + 10px;
+        //             y: 10px;
+        //             // padding: 20px;
+        //             width: root.width - 20px;
+        //             height: root.height - 35px;
+        //         }
+
+        //         // if self.x < 0 : CreateTaskView {
+        //         if NavigationAdapter.current-page == 1  : CreateTaskView {
+        //             x: root.width + 20px;
+        //             y: 10px;
+        //             width: root.width - 40px;
+        //             height: root.height - 35px;
+        //         }
+
+        //         animate x {
+        //             duration: AnimationSettings.move-duration;
+        //             easing: AnimationSettings.move-easing;
+        //         }
+        //     }
+        // }
+    }
+
+}

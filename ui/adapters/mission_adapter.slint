@@ -1,0 +1,78 @@
+//import { ComboBox, LineEdit, VerticalBox, Button, SpinBox } from "std-widgets.slint";
+//import { MyComboBox } from "../common.slint";
+//import { IconButton } from "../widgets/icon_button.slint";
+//import { TextButton } from "../widgets/text_button.slint";
+//import { Icons, FontSettings, TodoPalette, SpaceSettings } from "../widgets/styling.slint";
+import { FrequencyPresetSlintStruct } from "../adapters/frequency_adapter.slint";
+import { PowerPresetSlintStruct } from "../adapters/power_adapter.slint";
+//import { CreateFrequencyPresetAdapter } from "create_frequency_preset_view.slint";
+//import { MissionPowerView } from "../widgets/mission_power_view.slint";
+
+// @rust-attr(derive(serde::Serialize, serde::Deserialize))
+// export struct MissionSlintStruct {
+//     mission_name: string,
+//     mission_desc: string,
+//     mission_details: string,
+//     checked: bool,
+//     power_model: PowerPresetSlintStruct,
+//     frequency_model: FrequencyPresetSlintStruct
+// }
+// import { PowerPresetSlintStruct } from "../views/create_power_preset_view.slint";
+// import { FrequencyPresetSlintStruct } from "../views/create_frequency_preset_view.slint";
+
+@rust-attr(derive(serde::Serialize, serde::Deserialize))
+export struct MissionSlintStruct {
+    mission_name: string,
+    mission_id: int,
+    mission_desc: string,
+    mission_details: string,
+    // power_preset: string,
+    power_model: PowerPresetSlintStruct,
+    // frequency_preset: string,
+    frequency_model: FrequencyPresetSlintStruct,
+    checked: bool,
+}
+
+
+export global MissionAdapter {
+    in-out property <int> index;
+    in-out property <string> mode: "Create";
+    in-out property <MissionSlintStruct> mission;
+
+    // callback create(
+    //     /* mission-name */ string, 
+    //     /* mission-id */ int,
+    //     /* mission-desc */ string, 
+    //     /* frequency-preset */ FrequencyPresetSlintStruct,
+    //     /* power-preset */ PowerPresetSlintStruct
+    //     );
+    // callback update(
+    //     /* index */ int, 
+    //     /* mission-name */ string, 
+    //     /* mission-desc */ string, 
+    //     /* mission-id */ int, 
+    //     /* frequency-preset */ FrequencyPresetSlintStruct,
+    //     /* power-preset */ PowerPresetSlintStruct
+    //     );
+    callback create(
+        /* mission*/ MissionSlintStruct
+        );
+    callback update(
+        /* index */ int, 
+        /* mission*/ MissionSlintStruct
+        );
+    callback back();
+    pure callback next-mission-id() -> int;
+    pure callback validate_mission-id(int) -> int;
+
+    // dummy implementation for live preview
+    next-mission-id() => {
+      9
+    }
+
+    public function change_power_preset(preset: string) {
+        
+    }
+
+}
+
