@@ -46,7 +46,8 @@ export component MainWindow inherits Window {
         { mission_name: "dummy_mission2", mission_desc: "mission#2", mission_id: 2, mission_details: "Nominal|band2" },
         { mission_name: "dummy_mission3", mission_desc: "mission#3", mission_id: 3, mission_details: "Nominal|band3" },
     ];
-    in-out property <MissionSlintStruct> mission: { mission_name: "mission?", mission_desc: "mission#1", mission_id: 1, mission_details: "Nominal|band1" };
+    in-out property <MissionSlintStruct> mission;
+    in-out property <MissionSlintStruct> default_mission: { mission_name: "", mission_desc: "", mission_id: 0, mission_details: "Nominal" };
 
     callback create_mission();
     callback update_mission();
@@ -78,6 +79,7 @@ export component MainWindow inherits Window {
                     }
                     show_create_mission => {
                         show_mission_list = false;
+                        mission = default_mission;
                         mission_mode = "Create";
                     }
                 }

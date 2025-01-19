@@ -65,6 +65,7 @@ impl MissionListController {
     pub fn check_mission_field(&self, mut mission: ui::MissionSlintStruct, field_name: impl AsRef<str>, value: impl AsRef<str>) -> ui::MissionSlintStruct {
         match field_name.as_ref() {
             "mission_name" => mission.mission_name = value.as_ref().to_owned().into(),
+            "mission_desc" => mission.mission_desc = value.as_ref().to_owned().into(),
             _ => {}
         }
         mission
