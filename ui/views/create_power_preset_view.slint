@@ -4,7 +4,8 @@ import { IconButton } from "../widgets/icon_button.slint";
 import { TextButton } from "../widgets/text_button.slint";
 import { Icons, FontSettings, TodoPalette, SpaceSettings } from "../widgets/styling.slint";
 // import { CreateFrequencyPresetAdapter } from "create_frequency_preset_view.slint";
-import { PowerPresetAdapter } from "../adapters/power_adapter.slint";
+// import { PowerPresetAdapter } from "../adapters/power_adapter.slint";
+import { PowerPresetSlintStruct } from "../adapters/power_adapter.slint";
 
 
 // @rust-attr(derive(serde::Serialize, serde::Deserialize))
@@ -149,18 +150,27 @@ import { PowerPresetAdapter } from "../adapters/power_adapter.slint";
 // }
 
 export component CreatePowerPresetView {
+    callback cancel_operation();
+    callback create_power_preset();
+    callback update_power_preset();
+    callback changed_field(string, string) -> bool;
+    callback changed_power(string, float) -> bool;
+    in-out property <int> index;
+    in-out property <string> display_mode: "Create";
+    in-out property <PowerPresetSlintStruct> preset;
+
     property <string> preset-name-label: "Name";
     property <string> preset-name-desc: "Description";
-    property <string> valid_power1_label: "Power1";
-    property <string> valid_power2_label: "Power2";
-    property <string> valid_power3_label: "Power3";
-    property <string> valid_power4_label: "Power4";
-    property <string> valid_power5_label: "Power5";
-    property <string> valid_power6_label: "Power6";
-    property <string> valid_power7_label: "Power7";
-    property <string> valid_power8_label: "Power8";
-    property <string> valid_power9_label: "Power9";
-    property <string> valid_power10_label: "Power10";
+    property <string> _power1_label: "Power1";
+    property <string> _power2_label: "Power2";
+    property <string> _power3_label: "Power3";
+    property <string> _power4_label: "Power4";
+    property <string> _power5_label: "Power5";
+    property <string> _power6_label: "Power6";
+    property <string> _power7_label: "Power7";
+    property <string> _power8_label: "Power8";
+    property <string> _power9_label: "Power9";
+    property <string> _power10_label: "Power10";
 
     VerticalBox {
         padding: 10px;
@@ -171,8 +181,7 @@ export component CreatePowerPresetView {
                 accessible-label: @tr("Cancel Operation");
 
                 clicked => {
-                    root.reset();
-                    PowerPresetAdapter.back();
+                    cancel_operation();
                 }
             }
 
@@ -180,15 +189,15 @@ export component CreatePowerPresetView {
             Rectangle { }
 
             Button {
-                text: PowerPresetAdapter.mode;
+                text: display_mode;
                 enabled: preset-name-input.text != "";
                 primary: true;
 
                 clicked => {
-                    if PowerPresetAdapter.mode == "Create" {
-                        root.create();
+                    if display_mode == "Create" {
+                        create_power_preset();
                     } else {
-                        root.update();
+                        update_power_preset();
                     }
                 }
             }
@@ -208,11 +217,11 @@ export component CreatePowerPresetView {
 
             Rectangle { } // spacer
             preset-name-input := LineEdit {
-                text: PowerPresetAdapter.preset.preset-name;
+                text: preset.preset-name;
                 placeholder-text: @tr("PowerPreset Name (alphanumber, underscore, hyphen)");
                 accessible-label: preset-name-label.text;
                 changed text => {
-                    PowerPresetAdapter.change_preset_name(self.text);
+                    changed_field("preset_name", self.text);
                 }
             }
 
@@ -227,11 +236,11 @@ export component CreatePowerPresetView {
 
             Rectangle { } // spacer
             preset-desc-input := LineEdit {
-                text: PowerPresetAdapter.preset.preset-desc;
+                text: preset.preset-desc;
                 placeholder-text: @tr("PowerPreset Description");
                 accessible-label: preset-desc-label.text;
                 changed text => {
-                    PowerPresetAdapter.change_preset_desc(self.text);
+                    changed_field("preset_desc", self.text);
                 }
             }
 
@@ -249,15 +258,11 @@ export component CreatePowerPresetView {
 
                         Rectangle { } // spacer
                         power1-input := MySpinBox {
-                            value: PowerPresetAdapter.preset.power1;
-                            minimum: -34.5;
-                            maximum: 34.5;
-                            // accessible-label: power1-label.text;
+                            name: "power1";
+                            value: preset.power1;
                             changed value => {
-                                PowerPresetAdapter.change_power1(self.value);
-                                validate();
+                                changed_power(self.name, self.value);
                             }
-                            // width: 150px;
                         }
                     }
 
@@ -274,15 +279,11 @@ export component CreatePowerPresetView {
 
                         Rectangle { } // spacer
                         power2-input := MySpinBox {
-                            value: PowerPresetAdapter.preset.power2;
-                            minimum: -34.5;
-                            maximum: 34.5;
-                            // accessible-label: power2-label.text;
+                            name: "power2";
+                            value: preset.power2;
                             changed value => {
-                                PowerPresetAdapter.change_power2(self.value);
-                                validate();
+                                changed_power(self.name, self.value);
                             }
-                            // width: 150px;
                         }
                     }
                 }
@@ -300,15 +301,11 @@ export component CreatePowerPresetView {
 
                         Rectangle { } // spacer
                         power3-input := MySpinBox {
-                            value: PowerPresetAdapter.preset.power3;
-                            minimum: -34.5;
-                            maximum: 34.5;
-                            // accessible-label: power3-label.text;
+                            name: "power3";
+                            value: preset.power3;
                             changed value => {
-                                PowerPresetAdapter.change_power3(self.value);
-                                validate();
+                                changed_power(self.name, self.value);
                             }
-                            // width: 150px;
                         }
                     }
 
@@ -325,15 +322,11 @@ export component CreatePowerPresetView {
 
                         Rectangle { } // spacer
                         power4-input := MySpinBox {
-                            value: PowerPresetAdapter.preset.power4;
-                            minimum: -34.5;
-                            maximum: 34.5;
-                            // accessible-label: power4-label.text;
+                            name: "power4";
+                            value: preset.power4;
                             changed value => {
-                                PowerPresetAdapter.change_power4(self.value);
-                                validate();
+                                changed_power(self.name, self.value);
                             }
-                            // width: 150px;
                         }
                     }
                 }
@@ -351,13 +344,11 @@ export component CreatePowerPresetView {
 
                         Rectangle { } // spacer
                         power5-input := MySpinBox {
-                            value: PowerPresetAdapter.preset.power5;
-                            minimum: -34.5;
-                            maximum: 34.5;
-                            // accessible-label: power5-label.text;
+                            name: "power5";
+                            value: preset.power5;
+
                             changed value => {
-                                PowerPresetAdapter.change_power5(self.value);
-                                validate();
+                                changed_power(self.name, self.value);
                             }
                         }
                     }
@@ -375,15 +366,11 @@ export component CreatePowerPresetView {
 
                         Rectangle { } // spacer
                         power6-input := MySpinBox {
-                            value: PowerPresetAdapter.preset.power6;
-                            minimum: -34.5;
-                            maximum: 34.5;
-                            // accessible-label: power6-label.text;
+                            name: "power6";
+                            value: preset.power6;
                             changed value => {
-                                PowerPresetAdapter.change_power6(self.value);
-                                validate();
+                                changed_power(self.name, self.value);
                             }
-                            // width: 150px;
                         }
                     }
                 }
@@ -401,13 +388,10 @@ export component CreatePowerPresetView {
 
                         Rectangle { } // spacer
                         power7-input := MySpinBox {
-                            value: PowerPresetAdapter.preset.power7;
-                            minimum: -34.5;
-                            maximum: 34.5;
-                            // accessible-label: power7-label.text;
+                            name: "power7";
+                            value: preset.power7;
                             changed value => {
-                                PowerPresetAdapter.change_power7(self.value);
-                                validate();
+                                changed_power(self.name, self.value);
                             }
                         }
                     }
@@ -425,15 +409,11 @@ export component CreatePowerPresetView {
 
                         Rectangle { } // spacer
                         power8-input := MySpinBox {
-                            value: PowerPresetAdapter.preset.power8;
-                            minimum: -34.5;
-                            maximum: 34.5;
-                            // accessible-label: power8-label.text;
+                            name: "power8";
+                            value: preset.power8;
                             changed value => {
-                                PowerPresetAdapter.change_power8(self.value);
-                                validate();
+                                changed_power(self.name, self.value);
                             }
-                            // width: 150px;
                         }
                     }
                 }
@@ -451,13 +431,10 @@ export component CreatePowerPresetView {
 
                         Rectangle { } // spacer
                         power9-input := MySpinBox {
-                            value: PowerPresetAdapter.preset.power9;
-                            minimum: -34.5;
-                            maximum: 34.5;
-                            // accessible-label: power9-label.text;
+                            name: "power9";
+                            value: preset.power9;
                             changed value => {
-                                PowerPresetAdapter.change_power9(self.value);
-                                validate();
+                                changed_power(self.name, self.value);
                             }
                         }
                     }
@@ -475,132 +452,17 @@ export component CreatePowerPresetView {
 
                         Rectangle { } // spacer
                         power10-input := MySpinBox {
-                            value: PowerPresetAdapter.preset.power10;
-                            minimum: -34.5;
-                            maximum: 34.5;
-                            // accessible-label: power10-label.text;
+                            name: "power10";
+                            value: preset.power10;
                             changed value => {
-                                PowerPresetAdapter.change_power10(self.value);
-                                validate();
+                                changed_power(self.name, self.value);
                             }
-                            // width: 150px;
                         }
                     }
                 }
             }
 
             Rectangle { }
-        }
-    }
-
-    function reset() {
-        preset-name-input.text = "";
-        preset-desc-input.text = "";
-        power1-input.value = 0;
-        power2-input.value = 0;
-        power3-input.value = 0;
-        power4-input.value = 0;
-        power5-input.value = 0;
-        power6-input.value = 0;
-        power7-input.value = 0;
-        power8-input.value = 0;
-        power9-input.value = 0;
-        power10-input.value = 0;
-    }
-
-    function update() {
-        PowerPresetAdapter.back();
-        // PowerPresetAdapter.update(
-        //     PowerPresetAdapter.index,
-        //     preset-name-input.text, 
-        //     preset-desc-input.text, 
-        //     power1-input.value, 
-        //     power2-input.value, 
-        //     power3-input.value, 
-        //     power4-input.value, 
-        //     power5-input.value, 
-        //     power6-input.value, 
-        //     power7-input.value, 
-        //     power8-input.value, 
-        //     power9-input.value, 
-        //     power10-input.value);
-        PowerPresetAdapter.update(
-            PowerPresetAdapter.index,
-            PowerPresetAdapter.preset);
-        root.reset();
-    }
-
-    function create() {
-        PowerPresetAdapter.back();
-        // PowerPresetAdapter.create(
-        //     preset-name-input.text, 
-        //     preset-desc-input.text, 
-        //     power1-input.value, 
-        //     power2-input.value, 
-        //     power3-input.value, 
-        //     power4-input.value, 
-        //     power5-input.value, 
-        //     power6-input.value, 
-        //     power7-input.value, 
-        //     power8-input.value, 
-        //     power9-input.value, 
-        //     power10-input.value);
-        PowerPresetAdapter.create(
-            PowerPresetAdapter.preset);
-        root.reset();
-    }
-
-    function validate() {
-        debug("checking valid values power1:"+power1-input.value+" > "+power1-input.minimum + " < " + power1-input.maximum);
-        if power1-input.value < power1-input.minimum || power1-input.value > power1-input.maximum {
-            power1-label.text = valid_power1_label + "[invalid value]";
-        } else {
-            power1-label.text = valid_power1_label + "foo";
-        }
-        if power2-input.value < power2-input.minimum || power2-input.value > power2-input.maximum {
-            power2-label.text = valid_power2_label + "[invalid value]";
-        } else {
-            power2-label.text = valid_power2_label;
-        }
-        if power3-input.value < power3-input.minimum || power3-input.value > power3-input.maximum {
-            power3-label.text = valid_power3_label + "[invalid value]";
-        } else {
-            power3-label.text = valid_power3_label;
-        }
-        if power4-input.value < power4-input.minimum || power4-input.value > power4-input.maximum {
-            power4-label.text = valid_power4_label + "[invalid value]";
-        } else {
-            power4-label.text = valid_power4_label;
-        }
-        if power5-input.value < power5-input.minimum || power5-input.value > power5-input.maximum {
-            power5-label.text = valid_power5_label + "[invalid value]";
-        } else {
-            power5-label.text = valid_power5_label;
-        }
-        if power6-input.value < power6-input.minimum || power6-input.value > power6-input.maximum {
-            power6-label.text = valid_power6_label + "[invalid value]";
-        } else {
-            power6-label.text = valid_power6_label;
-        }
-        if power7-input.value < power7-input.minimum || power7-input.value > power7-input.maximum {
-            power7-label.text = valid_power7_label + "[invalid value]";
-        } else {
-            power7-label.text = valid_power7_label;
-        }
-        if power8-input.value < power8-input.minimum || power8-input.value > power8-input.maximum {
-            power8-label.text = valid_power8_label + "[invalid value]";
-        } else {
-            power8-label.text = valid_power8_label;
-        }
-        if power9-input.value < power9-input.minimum || power9-input.value > power9-input.maximum {
-            power9-label.text = valid_power9_label + "[invalid value]";
-        } else {
-            power9-label.text = valid_power9_label;
-        }
-        if power10-input.value < power10-input.minimum || power10-input.value > power10-input.maximum {
-            power10-label.text = valid_power10_label + "[invalid value]";
-        } else {
-            power10-label.text = valid_power10_label;
         }
     }
 }

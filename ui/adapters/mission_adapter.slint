@@ -34,45 +34,45 @@ export struct MissionSlintStruct {
 }
 
 
-export global MissionAdapter {
-    in-out property <int> index;
-    in-out property <string> mode: "Create";
-    in-out property <MissionSlintStruct> mission;
+// export global MissionAdapter {
+//     in-out property <int> index;
+//     in-out property <string> mode: "Create";
+//     in-out property <MissionSlintStruct> mission;
 
-    // callback create(
-    //     /* mission-name */ string, 
-    //     /* mission-id */ int,
-    //     /* mission-desc */ string, 
-    //     /* frequency-preset */ FrequencyPresetSlintStruct,
-    //     /* power-preset */ PowerPresetSlintStruct
-    //     );
-    // callback update(
-    //     /* index */ int, 
-    //     /* mission-name */ string, 
-    //     /* mission-desc */ string, 
-    //     /* mission-id */ int, 
-    //     /* frequency-preset */ FrequencyPresetSlintStruct,
-    //     /* power-preset */ PowerPresetSlintStruct
-    //     );
-    callback create(
-        /* mission*/ MissionSlintStruct
-        );
-    callback update(
-        /* index */ int, 
-        /* mission*/ MissionSlintStruct
-        );
-    callback back();
-    pure callback next-mission-id() -> int;
-    pure callback validate_mission-id(int) -> int;
+//     // callback create(
+//     //     /* mission-name */ string, 
+//     //     /* mission-id */ int,
+//     //     /* mission-desc */ string, 
+//     //     /* frequency-preset */ FrequencyPresetSlintStruct,
+//     //     /* power-preset */ PowerPresetSlintStruct
+//     //     );
+//     // callback update(
+//     //     /* index */ int, 
+//     //     /* mission-name */ string, 
+//     //     /* mission-desc */ string, 
+//     //     /* mission-id */ int, 
+//     //     /* frequency-preset */ FrequencyPresetSlintStruct,
+//     //     /* power-preset */ PowerPresetSlintStruct
+//     //     );
+//     callback create(
+//         /* mission*/ MissionSlintStruct
+//         );
+//     callback update(
+//         /* index */ int, 
+//         /* mission*/ MissionSlintStruct
+//         );
+//     callback back();
+//     pure callback next-mission-id() -> int;
+//     pure callback validate_mission-id(int) -> int;
 
-    // dummy implementation for live preview
-    next-mission-id() => {
-      9
-    }
+//     // dummy implementation for live preview
+//     next-mission-id() => {
+//       9
+//     }
 
-    public function change_power_preset(preset: string) {
+//     public function change_power_preset(preset: string) {
         
-    }
+//     }
 
-}
+// }
 

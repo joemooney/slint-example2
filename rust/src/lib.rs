@@ -14,11 +14,12 @@ pub use slint::*;
 // slint::include_modules!();
 
 fn init() -> ui::MainWindow {
-    let mission_repo = mvc::mission_repo();
-    let mission_controller = mvc::MissionListController::new(mission_repo);
 
     // let mission_model = Rc::new(slint::VecModel::from())
     let main_window = ui::MainWindow::new().unwrap();
+    //--------------------------------------------------------------------------------------------
+    let mission_repo = mvc::mission_repo();
+    let mission_controller = mvc::MissionListController::new(mission_repo);
     main_window.set_missions(mission_controller.connector());
 
     let ctrl = mission_controller.clone();
@@ -38,6 +39,29 @@ fn init() -> ui::MainWindow {
         println!("check mission field {:#?}", mission);
         ctrl.check_mission_field(mission, field_name, value)
     });
+    //--------------------------------------------------------------------------------------------
+    let power_preset_repo = mvc::power_preset_repo();
+    let power_preset_controller = mvc::PowerPresetListController::new(power_preset_repo);
+    main_window.set_power_presets(power_preset_controller.connector());
+
+    let ctrl = power_preset_controller.clone();
+    main_window.on_s2r_create_power_preset(move |power_preset|{
+        println!("create power_preset {:#?}", power_preset);
+        ctrl.create_preset(power_preset);
+    });
+
+    let ctrl = power_preset_controller.clone();
+    main_window.on_s2r_update_power_preset(move |index, power_preset|{
+        println!("update power_preset {:#?}", power_preset);
+        ctrl.update_preset(index as usize, power_preset);
+    });
+
+    let ctrl = power_preset_controller.clone();
+    main_window.on_s2r_check_power_preset_field(move |power_preset, field_name, value|{
+        println!("check power_preset field {:#?}", power_preset);
+        ctrl.check_preset_field(power_preset, field_name, value)
+    });
+    //--------------------------------------------------------------------------------------------
 
     main_window
 }

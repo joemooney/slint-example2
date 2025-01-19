@@ -36,6 +36,16 @@ export global PowerPresetListAdapter {
 }
 
 export component PowerPresetListView {
+    in-out property <[PowerPresetSlintStruct]> presets: [
+        // this is only dummy data for the preview
+        { preset_name: "dummy_power1", preset_desc: "power#1", preset_details: "Nominal|band1" },
+        { preset_name: "dummy_power2", preset_desc: "power#2", preset_details: "Nominal|band2" },
+        { preset_name: "dummy_power3", preset_desc: "power#3", preset_details: "Nominal|band3" },
+    ];
+    callback show_edit_power_preset(int);
+    callback show_create_power_preset();
+    callback remove_power_preset(int);    
+
     VerticalBox {
         // vertical-stretch: 0;
         // horizontal-stretch: 0;
@@ -51,7 +61,7 @@ export component PowerPresetListView {
 
         PowerPresetListView {
             width: 100%;
-            xmodel: PowerPresetListAdapter.xpower_presets;
+            xmodel: presets;
             accessible-label: @tr("List of Power Presets");
 
             // toggle(index) => {
@@ -59,10 +69,10 @@ export component PowerPresetListView {
             // }
 
             edit_preset(index) => {
-                PowerPresetListAdapter.show-edit-power-preset(index);
+                show_edit_power_preset(index);
             }
             remove(index) => {
-                PowerPresetListAdapter.remove-power-preset(index);
+                remove_power_preset(index);
             }
         }
 
@@ -74,7 +84,7 @@ export component PowerPresetListView {
                 accessible-label: @tr("Create New Power Preset");
 
                 clicked => {
-                    PowerPresetListAdapter.show-create-power-preset();
+                    show_create_power_preset();
                 }
             }
         }

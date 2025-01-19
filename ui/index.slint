@@ -3,9 +3,11 @@ import { MissionListView } from "./views/mission_list_view.slint";
 // export { MissionListAdapter }
 
 import { CreateMissionView } from "./views/create_mission_view.slint";
-import { MissionAdapter, MissionSlintStruct } from "./adapters/mission_adapter.slint";
-export { MissionAdapter }
+import { MissionSlintStruct } from "./adapters/mission_adapter.slint";
+// import { MissionAdapter, MissionSlintStruct } from "./adapters/mission_adapter.slint";
+// export { MissionAdapter }
 
+import { PowerPresetSlintStruct } from "./adapters/power_adapter.slint";
 import { PowerPresetListView, PowerPresetListAdapter } from "./views/power_preset_list_view.slint";
 export { PowerPresetListAdapter }
 
@@ -37,7 +39,25 @@ export component MainWindow inherits Window {
     preferred-width: 600px;
     preferred-height: 600px;
     title: "Radio Configuration Tool";
-    in-out property <string> mission_mode;
+    //======================================================================================
+    in-out property <string> power_preset_display_mode;
+    in-out property <int> power_preset_index;
+    in-out property <bool> show_power_preset_list: true;
+    in-out property <[PowerPresetSlintStruct]> power_presets: [
+        // this is only dummy data for the preview
+        { preset_name: "dummy_power1", preset_desc: "power#1", preset_details: "Nominal|band1" },
+        { preset_name: "dummy_power2", preset_desc: "power#2", preset_details: "Nominal|band2" },
+        { preset_name: "dummy_power3", preset_desc: "power#3", preset_details: "Nominal|band3" },
+    ];
+    in-out property <PowerPresetSlintStruct> power_preset;
+    in-out property <PowerPresetSlintStruct> default_power_preset: { preset_name: "", preset_desc: "", preset_details: "Nominal" };
+    callback create_power_preset();
+    callback update_power_preset();
+    callback s2r_check_power_preset_field(PowerPresetSlintStruct, string, string) -> PowerPresetSlintStruct;
+    callback s2r_create_power_preset(PowerPresetSlintStruct);
+    callback s2r_update_power_preset(int, PowerPresetSlintStruct);
+    //======================================================================================
+    in-out property <string> mission_display_mode;
     in-out property <int> mission_index;
     in-out property <bool> show_mission_list: true;
     in-out property <[MissionSlintStruct]> missions: [
@@ -51,10 +71,10 @@ export component MainWindow inherits Window {
 
     callback create_mission();
     callback update_mission();
-    // callback changed_field(string, string) -> bool;
     callback s2r_check_mission_field(MissionSlintStruct, string, string) -> MissionSlintStruct;
     callback s2r_create_mission(MissionSlintStruct);
     callback s2r_update_mission(int, MissionSlintStruct);
+    //======================================================================================
 
     // Tabs {}
     TabWidget {
@@ -75,17 +95,17 @@ export component MainWindow inherits Window {
                         mission = missions[idx];
                         debug("Edit mission", mission);
                         show_mission_list = false;
-                        mission_mode = "Update";
+                        mission_display_mode = "Update";
                     }
                     show_create_mission => {
                         show_mission_list = false;
                         mission = default_mission;
-                        mission_mode = "Create";
+                        mission_display_mode = "Create";
                     }
                 }
 
                 if !show_mission_list  : create_mission_view := CreateMissionView {
-                    mode <=> mission_mode;
+                    mode <=> mission_display_mode;
                     mission <=> mission;
                     width: 100%;
                     height: 100%;
@@ -105,6 +125,54 @@ export component MainWindow inherits Window {
                     changed_field(field_name, value) => {
                         debug("index.slint update mission", mission);
                         mission = s2r_check_mission_field(mission, field_name, value);
+                        return true;
+                    }
+                }
+            }
+        }
+        Tab {
+            title: "Power Presets";
+            Rectangle {
+                if show_power_preset_list  : power_preset_list_view := PowerPresetListView {
+                    presets <=> power_presets;
+                    width: 100%;
+                    height: 100%;
+                    show_edit_power_preset(idx) => {
+                        debug("Edit power_preset", idx);
+                        power_preset_index = idx;
+                        power_preset = power_presets[idx];
+                        debug("Edit power_preset", power_preset);
+                        show_power_preset_list = false;
+                        power_preset_display_mode = "Update";
+                    }
+                    show_create_power_preset => {
+                        show_power_preset_list = false;
+                        power_preset = default_power_preset;
+                        power_preset_display_mode = "Create";
+                    }
+                }
+
+                if !show_power_preset_list  : create_power_preset_view := CreatePowerPresetView {
+                    display_mode <=> power_preset_display_mode;
+                    preset <=> power_preset;
+                    width: 100%;
+                    height: 100%;
+                    cancel_operation => {
+                        show_power_preset_list = true;
+                    }
+                    create_power_preset => {
+                        debug("index.slint create power_preset", power_preset);
+                        s2r_create_power_preset(power_preset);
+                        show_power_preset_list = true;
+                    }
+                    update_power_preset => {
+                        debug("index.slint update power_preset", power_preset);
+                        s2r_update_power_preset(power_preset_index, power_preset);
+                        show_power_preset_list = true;
+                    }
+                    changed_field(field_name, value) => {
+                        debug("index.slint update power_preset", power_preset);
+                        power_preset = s2r_check_power_preset_field(power_preset, field_name, value);
                         return true;
                     }
                 }

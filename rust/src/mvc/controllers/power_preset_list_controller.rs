@@ -6,6 +6,7 @@ use slint::ModelNotify;
 use slint::ModelRc;
 use slint::ModelTracker;
 
+use crate::ui;
 use crate::mvc;
 use crate::mvc::PowerPresetStruct;
 // use crate::mvc::PowerPresetModel;
@@ -26,6 +27,12 @@ impl PowerPresetListController {
             // show_create_power_preset_callback: Rc::new(Callback::default()),
             // show_edit_power_preset_callback: Rc::new(Callback::default()),
         }
+    }
+
+    // connects repo to a Slint `Model`` of Vec<MissionSlintStruct>
+    pub fn connector(&self) -> ModelRc<crate::ui::PowerPresetSlintStruct> {
+        let connector: ModelRc<crate::ui::PowerPresetSlintStruct> = Rc::new(slint::MapModel::new(self.preset_model(), mvc::PowerPresetStruct::map_power_preset_to_slint)).into();
+        connector
     }
 
     pub fn preset_model(&self) -> ModelRc<mvc::PowerPresetStruct> {
@@ -55,10 +62,10 @@ impl PowerPresetListController {
     //     })
     // }
 
-    pub fn update_preset(&self, index: usize, preset: PowerPresetStruct) {
+    pub fn update_preset(&self, index: usize, preset: ui::PowerPresetSlintStruct) {
         println!("controllers/power_preset_list_controller:create_preset");
         // let preset_id = self.preset_model.
-        self.preset_model.update_preset(index, preset)
+        self.preset_model.update_preset(index, preset.into())
     }
 
     // pub fn create_preset(&self, preset_name: &str, preset_desc: &str, power1: f32, power2: f32, power3: f32, power4: f32, power5: f32, power6: f32, power7: f32, power8: f32, power9: u32, power10: u32) {
@@ -71,12 +78,19 @@ impl PowerPresetListController {
     //         ..Default::default()
     //     })
     // }
-    pub fn create_preset(&self, preset: PowerPresetStruct) {
+    pub fn create_preset(&self, preset: ui::PowerPresetSlintStruct) {
         println!("controllers/power_preset_list_controller:create_preset");
         // let preset_id = self.preset_model.
-        self.preset_model.push_preset(preset)
+        self.preset_model.push_preset(preset.into())
     }
-
+    pub fn check_preset_field(&self, mut preset: ui::PowerPresetSlintStruct, field_name: impl AsRef<str>, value: impl AsRef<str>) -> ui::PowerPresetSlintStruct {
+        match field_name.as_ref() {
+            "preset_name" => preset.preset_name = value.as_ref().to_owned().into(),
+            "preset_desc" => preset.preset_desc = value.as_ref().to_owned().into(),
+            _ => {}
+        }
+        preset
+    }
     // pub fn show_edit_power_preset(&self) {
     //     println!("power_preset_list_controller.rs show_edit_power_preset invoke");
     //     self.show_edit_power_preset_callback.invoke(&());
@@ -260,7 +274,7 @@ mod tests {
         let preset_model = controller.preset_model();
 
         assert_eq!(preset_model.row_count(), 2);
-        controller.create_preset(power_preset3());
+        controller.create_preset(power_preset3().into());
         assert_eq!(preset_model.row_count(), 3);
 
         assert_eq!(
