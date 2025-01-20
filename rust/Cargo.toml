@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 [package]
-name = "todo-mvc"
+name = "config_tool"
 version = "1.8.0"
 authors = ["Joe Mooney <info@joe.mooney>"]
 edition = "2021"
@@ -13,11 +13,11 @@ license = "MIT"
 [lib]
 crate-type = ["lib", "cdylib"]
 path = "src/lib.rs"
-name = "todo_lib_mvc"
+name = "config_tool"
 
 [[bin]]
 path = "src/main.rs"
-name = "todo-mvc"
+name = "config_tool"
 
 [dependencies]
 slint = { version = "1.9.1", features = ["serde", "backend-android-activity-06"] }

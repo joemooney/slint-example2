@@ -2,6 +2,7 @@
 use std::rc::Rc;
 
 use slint::Model;
+// use slint::ModelExt;
 use slint::ModelNotify;
 use slint::ModelRc;
 use slint::ModelTracker;
@@ -21,7 +22,7 @@ pub struct PowerPresetListController {
 }
 
 impl PowerPresetListController {
-    pub fn new(repo: impl mvc::traits::PowerPresetRepository + 'static) -> Self {
+    pub fn new(repo: Rc<dyn mvc::traits::PowerPresetRepository + 'static>) -> Self {
         Self {
             preset_model: PowerPresetModel::new(repo),
             // show_create_power_preset_callback: Rc::new(Callback::default()),
@@ -39,15 +40,18 @@ impl PowerPresetListController {
         ModelRc::new(self.preset_model.clone())
     }
 
+
     // pub fn toggle_done(&self, index: usize) {
     //     self.preset_model.toggle_done(index)
     // }
 
     pub fn get_preset(&self, index: usize) -> Option<PowerPresetStruct> {
+        println!("[PowerPresetController] get preset");
         self.preset_model.get_preset(index)
     }
 
     pub fn remove_preset(&self, index: usize) {
+        println!("[PowerPresetController] remove preset");
         self.preset_model.remove_preset(index)
     }
 
@@ -63,7 +67,8 @@ impl PowerPresetListController {
     // }
 
     pub fn update_preset(&self, index: usize, preset: ui::PowerPresetSlintStruct) {
-        println!("controllers/power_preset_list_controller:create_preset");
+        println!("[PowerPresetController] update preset");
+        println!("controllers/power_preset_list_controller:update_preset");
         // let preset_id = self.preset_model.
         self.preset_model.update_preset(index, preset.into())
     }
@@ -79,9 +84,10 @@ impl PowerPresetListController {
     //     })
     // }
     pub fn create_preset(&self, preset: ui::PowerPresetSlintStruct) {
+        println!("[PowerPresetController] create preset");
         println!("controllers/power_preset_list_controller:create_preset");
         // let preset_id = self.preset_model.
-        self.preset_model.push_preset(preset.into())
+        self.preset_model.create_preset(preset.into())
     }
     pub fn check_preset_field(&self, mut preset: ui::PowerPresetSlintStruct, field_name: impl AsRef<str>, value: impl AsRef<str>) -> ui::PowerPresetSlintStruct {
         match field_name.as_ref() {
@@ -118,14 +124,43 @@ impl PowerPresetListController {
 }
 
 #[derive(Clone)]
-struct PowerPresetModel {
+pub struct PowerPresetModel {
     repo: Rc<dyn mvc::traits::PowerPresetRepository>,
     notify: Rc<ModelNotify>,
+    pub preset_names : Rc<slint::VecModel<slint::SharedString>>,
 }
 
 impl PowerPresetModel {
-    fn new(repo: impl mvc::traits::PowerPresetRepository + 'static) -> Self {
-        Self { repo: Rc::new(repo), notify: Rc::new(Default::default()) }
+    pub fn new(repo: Rc<dyn mvc::traits::PowerPresetRepository + 'static>) -> Self {
+        // let name1 = SharedString::from("aaa");
+        let preset_names = Rc::new(slint::VecModel::from(vec![]));
+        let preset_model = Self { 
+            repo,
+            notify: Rc::new(Default::default()) ,
+            preset_names
+        };
+        preset_model.update_preset_names();
+        preset_model
+    }
+
+    // connects repo to a Slint `Model`` of Vec<MissionSlintStruct>
+    pub fn ui_mapping(&self) -> ModelRc<crate::ui::PowerPresetSlintStruct> {
+        let wrapped_model: ModelRc<mvc::PowerPresetStruct> = ModelRc::new(self.clone());
+        let map_function = mvc::PowerPresetStruct::map_power_preset_to_slint;
+        let connector: ModelRc<crate::ui::PowerPresetSlintStruct> = Rc::new(
+            slint::MapModel::new(wrapped_model, map_function)
+        ).into();
+        connector
+    }
+
+    // fn get_preset_names1(names: Vec<String>) -> Rc<slint::VecModel<slint::SharedString>> {
+    //     let v: slint::VecModel<slint::SharedString> = names.into_iter().map(|s| slint::SharedString::from(s)).collect();
+    //     Rc::new(v)
+    // }
+
+    fn get_preset_names(names: Vec<String>) -> Vec<slint::SharedString> {
+        let v: Vec<slint::SharedString> = names.into_iter().map(|s| slint::SharedString::from(s)).collect();
+        v
     }
 
     // fn toggle_done(&self, index: usize) {
@@ -137,29 +172,56 @@ impl PowerPresetModel {
     // }
 
     fn get_preset(&self, index: usize) -> Option<PowerPresetStruct> {
+        println!("[PowerPresetModel] getting preset {index}");
         self.repo.get_power_preset(index)
     }
 
-    fn remove_preset(&self, index: usize) {
+    pub fn remove_preset(&self, index: usize) {
+        println!("[PowerPresetModel] remove preset {index}");
         if !self.repo.remove_power_preset(index) {
             return;
         }
+        // self.preset_names.set_vec(self.repo.preset_names().iter().map(|s| s.into()).collect());
+        self.update_preset_names();
         self.notify.row_removed(index, 1)
     }
 
-    fn update_preset(&self, index: usize, preset: PowerPresetStruct) {
-        if !self.repo.update_power_preset(index, preset) {
+    fn update_preset_names(&self) {
+        self.preset_names.set_vec(PowerPresetModel::get_preset_names(self.repo.preset_names()));
+    }
+
+    pub fn update_preset(&self, index: usize, preset: ui::PowerPresetSlintStruct) {
+        println!("[PowerPresetModel] update preset {index}");
+        if !self.repo.update_power_preset(index, preset.into()) {
             return;
         }
+        self.update_preset_names();
         self.notify.row_changed(index);
     }
 
-    fn push_preset(&self, preset: PowerPresetStruct) {
-        if !self.repo.push_power_preset(preset) {
+    pub fn create_preset(&self, preset: ui::PowerPresetSlintStruct) {
+        println!("[PowerPresetModel] push preset");
+        if !self.repo.push_power_preset(preset.into()) {
             return;
         }
-
+        self.update_preset_names();
         self.notify.row_added(self.row_count() - 1, 1);
+    }
+
+    pub fn change_preset_float_value(&self, mut preset: ui::PowerPresetSlintStruct, field_name: impl AsRef<str>, value: f32) -> ui::PowerPresetSlintStruct {
+        match field_name.as_ref() {
+            "power1" => preset.power1 = value,
+            _ => {}
+        }
+        preset
+    }
+    pub fn check_preset_field(&self, mut preset: ui::PowerPresetSlintStruct, field_name: impl AsRef<str>, value: impl AsRef<str>) -> ui::PowerPresetSlintStruct {
+        match field_name.as_ref() {
+            "preset_name" => preset.preset_name = value.as_ref().to_owned().into(),
+            "preset_desc" => preset.preset_desc = value.as_ref().to_owned().into(),
+            _ => {}
+        }
+        preset
     }
 }
 
@@ -203,10 +265,11 @@ mod tests {
     }
 
     fn test_controller() -> PowerPresetListController {
-        PowerPresetListController::new(mvc::MockPowerPresetRepository::new(vec![
+        let repo = mvc::MockPowerPresetRepository::new(vec![
             power_preset1(),
             power_preset2(),
-        ]))
+        ]);
+        PowerPresetListController::new(Rc::new(repo))
     }
 
     #[test]

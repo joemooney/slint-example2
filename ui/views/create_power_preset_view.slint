@@ -154,7 +154,7 @@ export component CreatePowerPresetView {
     callback create_power_preset();
     callback update_power_preset();
     callback changed_field(string, string) -> bool;
-    callback changed_power(string, float) -> bool;
+    callback changed_float(string, float) -> bool;
     in-out property <int> index;
     in-out property <string> display_mode: "Create";
     in-out property <PowerPresetSlintStruct> preset;
@@ -261,7 +261,7 @@ export component CreatePowerPresetView {
                             name: "power1";
                             value: preset.power1;
                             changed value => {
-                                changed_power(self.name, self.value);
+                                changed_float(self.name, self.value);
                             }
                         }
                     }
@@ -282,7 +282,7 @@ export component CreatePowerPresetView {
                             name: "power2";
                             value: preset.power2;
                             changed value => {
-                                changed_power(self.name, self.value);
+                                changed_float(self.name, self.value);
                             }
                         }
                     }
@@ -304,7 +304,7 @@ export component CreatePowerPresetView {
                             name: "power3";
                             value: preset.power3;
                             changed value => {
-                                changed_power(self.name, self.value);
+                                changed_float(self.name, self.value);
                             }
                         }
                     }
@@ -325,7 +325,7 @@ export component CreatePowerPresetView {
                             name: "power4";
                             value: preset.power4;
                             changed value => {
-                                changed_power(self.name, self.value);
+                                changed_float(self.name, self.value);
                             }
                         }
                     }
@@ -348,7 +348,7 @@ export component CreatePowerPresetView {
                             value: preset.power5;
 
                             changed value => {
-                                changed_power(self.name, self.value);
+                                changed_float(self.name, self.value);
                             }
                         }
                     }
@@ -369,7 +369,7 @@ export component CreatePowerPresetView {
                             name: "power6";
                             value: preset.power6;
                             changed value => {
-                                changed_power(self.name, self.value);
+                                changed_float(self.name, self.value);
                             }
                         }
                     }
@@ -391,7 +391,7 @@ export component CreatePowerPresetView {
                             name: "power7";
                             value: preset.power7;
                             changed value => {
-                                changed_power(self.name, self.value);
+                                changed_float(self.name, self.value);
                             }
                         }
                     }
@@ -412,7 +412,7 @@ export component CreatePowerPresetView {
                             name: "power8";
                             value: preset.power8;
                             changed value => {
-                                changed_power(self.name, self.value);
+                                changed_float(self.name, self.value);
                             }
                         }
                     }
@@ -434,7 +434,7 @@ export component CreatePowerPresetView {
                             name: "power9";
                             value: preset.power9;
                             changed value => {
-                                changed_power(self.name, self.value);
+                                changed_float(self.name, self.value);
                             }
                         }
                     }
@@ -455,7 +455,7 @@ export component CreatePowerPresetView {
                             name: "power10";
                             value: preset.power10;
                             changed value => {
-                                changed_power(self.name, self.value);
+                                changed_float(self.name, self.value);
                             }
                         }
                     }

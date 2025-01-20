@@ -784,6 +784,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "config_tool"
+version = "1.8.0"
+dependencies = [
+ "chrono",
+ "console_error_panic_hook",
+ "serde",
+ "serde_json",
+ "slint",
+ "slint-build",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "console_error_panic_hook"
 version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4017,19 +4030,6 @@ name = "tinyvec_macros"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
-
-[[package]]
-name = "todo-mvc"
-version = "1.8.0"
-dependencies = [
- "chrono",
- "console_error_panic_hook",
- "serde",
- "serde_json",
- "slint",
- "slint-build",
- "wasm-bindgen",
-]
 
 [[package]]
 name = "toml"

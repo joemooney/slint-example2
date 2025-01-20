@@ -13,6 +13,7 @@ export component PowerPresetValuesView {
     callback changed_field(string, string) -> bool;
     callback change_power(string, float) -> bool;
     in-out property <PowerPresetSlintStruct> preset;
+    in-out property <[string]> power_preset_names: ["dummy_preset1", "dummy_preset2", "dummy_preset3"];
 
     property <string> preset-name-label: "Name";
     property <string> preset-name-desc: "Description";
@@ -44,9 +45,9 @@ export component PowerPresetValuesView {
                     }
                     power-preset-input := ComboBox {
                         current-value: preset.preset-name;
-                        model: [@tr("Nominal"), @tr("HighAssurance"), @tr("Secret")];
+                        model <=> power_preset_names;
                         changed  current-value => {
-                            changed_field("preset_name", self.current-value);
+                            call_change_field("power_preset_name", self.current_value);
                         }
                     }
                 }
@@ -57,7 +58,7 @@ export component PowerPresetValuesView {
                         value: preset.power1;
                         name: "power1";
                         changed value => {
-                            change_power(self.name, self.value);
+                            call_change_field(self.name, self.value);
                         }
                     }
                     power2-input := MyPowerValue {
@@ -135,7 +136,29 @@ export component PowerPresetValuesView {
                     }
                 }
             }
+            Row {
+                Button {
+                    text: "Debug";
+                    clicked => {
+                        debug(preset);
+                    }
+                }
+            }
         }
+    }
+    function call_change_field(field_name: string, value: string) {
+        changed_field(field_name, value);
+        debug("changing power1 to ", preset.power1);
+        // power1-input.value = preset.power1;
+        // power2-input.value = preset.power2;
+        // power3-input.value = preset.power3;
+        // power4-input.value = preset.power4;
+        // power5-input.value = preset.power5;
+        // power6-input.value = preset.power6;
+        // power7-input.value = preset.power7;
+        // power8-input.value = preset.power8;
+        // power9-input.value = preset.power9;
+        // power10-input.value = preset.power10;
     }
 
 }

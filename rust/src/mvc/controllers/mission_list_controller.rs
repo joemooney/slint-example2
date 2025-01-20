@@ -17,21 +17,23 @@ use crate::ui;
 #[derive(Clone)]
 pub struct MissionListController {
     mission_model: MissionModel,
+    power_preset_repo: Rc<dyn mvc::traits::PowerPresetRepository + 'static>,
     // show_create_mission_callback: Rc<Callback<(), ()>>,
     // show_edit_mission_callback: Rc<Callback<(), ()>>,
 }
 
 impl MissionListController {
-    pub fn new(repo: impl mvc::traits::MissionRepository + 'static) -> Self {
+    pub fn new(repo: impl mvc::traits::MissionRepository + 'static, power_preset_repo: Rc<dyn mvc::traits::PowerPresetRepository + 'static>) -> Self {
         Self {
             mission_model: MissionModel::new(repo),
+            power_preset_repo,
             // show_create_mission_callback: Rc::new(Callback::default()),
             // show_edit_mission_callback: Rc::new(Callback::default()),
         }
     }
 
     // connects repo to a Slint `Model`` of Vec<MissionSlintStruct>
-    pub fn connector(&self) -> ModelRc<crate::ui::MissionSlintStruct> {
+    pub fn ui_mapping(&self) -> ModelRc<crate::ui::MissionSlintStruct> {
         let connector: ModelRc<crate::ui::MissionSlintStruct> = Rc::new(slint::MapModel::new(self.mission_model(), mvc::MissionStruct::map_mission_to_slint)).into();
         connector
     }
@@ -62,10 +64,25 @@ impl MissionListController {
         self.mission_model.push_mission(mission)
     }
 
+    pub fn switch_power_preset(&self, mission: &mut ui::MissionSlintStruct, value: impl AsRef<str>) {
+        // let power_preset_name = mission.power_model.preset_name.as_str();
+        let power_preset_name = value.as_ref();
+        match self.power_preset_repo.find_power_preset(power_preset_name) {
+            Some(power_preset) => {
+                println!("using power preset {}", power_preset_name);
+                mission.power_model = power_preset.into();
+            }
+            None => {
+                println!("did not find power preset {}", power_preset_name);
+            }
+        }
+    }
+
     pub fn check_mission_field(&self, mut mission: ui::MissionSlintStruct, field_name: impl AsRef<str>, value: impl AsRef<str>) -> ui::MissionSlintStruct {
         match field_name.as_ref() {
             "mission_name" => mission.mission_name = value.as_ref().to_owned().into(),
             "mission_desc" => mission.mission_desc = value.as_ref().to_owned().into(),
+            "power_preset_name" => self.switch_power_preset(&mut mission, value),
             _ => {}
         }
         mission
@@ -186,12 +203,33 @@ mod tests {
         let mission3 = mvc::MissionStruct { mission_name: "mission3".into(), mission_id: 3, mission_desc: "desc".into(), flagged: false, power_model: power_preset3, frequency_model: frequency_preset3  };
         mission3
     }
-
+    fn power_preset1() -> PowerPresetStruct {
+        let power1 = PowerStruct{power1: 1.1, power2: 1.2, power3: 3.2, power4: 1.1, power5: 1.1, power6: 1.1, power7: 1.1, power8: 1.1, power9: 1, power10: 1};
+        let power_preset1 = PowerPresetStruct{power_preset_name: "power1".into(), power_preset_desc: "desc".into(), values: power1 };
+        power_preset1
+    }
+    fn power_preset2() -> PowerPresetStruct {
+        let power2 = PowerStruct{power1: 2.2, power2: 2.2, power3: 3.2, power4: 2.2, power5: 2.2, power6: 2.2, power7: 2.2, power8: 2.2, power9: 2, power10: 2};
+        let power_preset2 = PowerPresetStruct{power_preset_name: "power2".into(), power_preset_desc: "desc".into(), values: power2 };
+        power_preset2
+    }
+    fn power_preset3() -> PowerPresetStruct {
+        let power3 = PowerStruct{power1: 3.3, power2: 3.3, power3: 3.3, power4: 3.3, power5: 3.3, power6: 3.3, power7: 3.3, power8: 3.3, power9: 3, power10: 3};
+        let power_preset3 = PowerPresetStruct{power_preset_name: "power3".into(), power_preset_desc: "desc".into(), values: power3 };
+        power_preset3
+    }
+    fn power_preset_repo() -> mvc::MockPowerPresetRepository {
+        mvc::MockPowerPresetRepository::new(vec![
+            power_preset1(),
+            power_preset2(),
+            power_preset3(),
+        ])
+    }
     fn test_controller() -> MissionListController {
-        MissionListController::new(mvc::MockMissionRepository::new(vec![
-            mission1(), 
-            mission2(),
-        ]))
+        let missions = vec![mission1(), mission2() ];
+        let power_preset_repo = Rc::new(power_preset_repo());
+        let mission_repo = mvc::MockMissionRepository::new(missions);
+        MissionListController::new(mission_repo, power_preset_repo)
     }
 
     #[test]

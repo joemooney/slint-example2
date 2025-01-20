@@ -1,3 +1,3 @@
 fn main() {
-    todo_lib_mvc::main();
+    config_tool::main();
 }

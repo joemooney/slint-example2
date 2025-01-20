@@ -7,6 +7,7 @@ import { FrequencyPresetSlintStruct } from "../adapters/frequency_adapter.slint"
 import { PowerPresetSlintStruct } from "../adapters/power_adapter.slint";
 import { FrequencyPresetAdapter } from "../adapters/frequency_adapter.slint";
 import { MissionPowerView } from "../widgets/mission_power_view.slint";
+import { PowerPresetValuesView } from "../widgets/power_preset_values_view.slint";
 
 // @rust-attr(derive(serde::Serialize, serde::Deserialize))
 // export struct MissionSlintStruct {
@@ -64,6 +65,7 @@ export component CreateMissionView {
     in-out property <int> index;
     in-out property <string> mode: "Create";
     in-out property <MissionSlintStruct> mission;
+    in-out property <[string]> power_preset_names: ["dummy_preset1", "dummy_preset2", "dummy_preset3"];
 
     VerticalBox {
         padding: 10px;
@@ -173,10 +175,17 @@ export component CreateMissionView {
             Rectangle { } // spacer
             frequency-preset-input := ComboBox {
                 current-value: mission.frequency-model.preset-name;
-                model: [@tr("default"), @tr("band-a"), @tr("band-b")];
+                model <=> power_preset_names;
             }
 
-            MissionPowerView {}
+            PowerPresetValuesView {
+                power_preset_names <=> power_preset_names;
+                preset: mission.power-model;
+                changed_field(f, v) => { return changed_field(f, v); }
+            }
+            // MissionPowerView {
+            //     power_preset_names <=> power_preset_names;
+            // }
         }
     }
 

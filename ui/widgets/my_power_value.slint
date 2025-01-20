@@ -26,7 +26,7 @@ export component MyPowerValue inherits Rectangle {
                 horizontal-alignment: left;
                 max-height: self.font-size * 1.5;
                 // max-width: 25px;
-                text: "0.0";
+                text: value;
                 changed text => {
                     changed_value(label, self.text);
                 }

@@ -10,6 +10,7 @@ export component MissionPowerView inherits Rectangle {
     callback toggle_accordion();
     in-out property <bool> is_accordion_expanded;
     in-out property <string> preset_details;
+    in-out property <[string]> power_preset_names: ["dummy_preset1", "dummy_preset2", "dummy_preset3"];
 
     VerticalLayout {
         spacing: 4px;
@@ -27,7 +28,9 @@ export component MissionPowerView inherits Rectangle {
         }
 
         if is_accordion_expanded: 
-            PowerPresetValuesView {}
+            PowerPresetValuesView {
+                power_preset_names <=> power_preset_names;
+            }
             // VerticalLayout {
             //     spacing: 8px;
 

@@ -49,13 +49,16 @@ export component MainWindow inherits Window {
         { preset_name: "dummy_power2", preset_desc: "power#2", preset_details: "Nominal|band2" },
         { preset_name: "dummy_power3", preset_desc: "power#3", preset_details: "Nominal|band3" },
     ];
+    in-out property <[string]> power_preset_names: ["dummy_preset1", "dummy_preset2", "dummy_preset3"];
     in-out property <PowerPresetSlintStruct> power_preset;
     in-out property <PowerPresetSlintStruct> default_power_preset: { preset_name: "", preset_desc: "", preset_details: "Nominal" };
     callback create_power_preset();
     callback update_power_preset();
     callback s2r_check_power_preset_field(PowerPresetSlintStruct, string, string) -> PowerPresetSlintStruct;
+    callback s2r_change_power_preset_float_value(PowerPresetSlintStruct, string, float) -> PowerPresetSlintStruct;
     callback s2r_create_power_preset(PowerPresetSlintStruct);
     callback s2r_update_power_preset(int, PowerPresetSlintStruct);
+    callback s2r_remove_power_preset(int);
     //======================================================================================
     in-out property <string> mission_display_mode;
     in-out property <int> mission_index;
@@ -107,6 +110,7 @@ export component MainWindow inherits Window {
                 if !show_mission_list  : create_mission_view := CreateMissionView {
                     mode <=> mission_display_mode;
                     mission <=> mission;
+                    power_preset_names <=> power_preset_names;
                     width: 100%;
                     height: 100%;
                     cancel_operation => {
@@ -124,7 +128,8 @@ export component MainWindow inherits Window {
                     }
                     changed_field(field_name, value) => {
                         debug("index.slint update mission", mission);
-                        mission = s2r_check_mission_field(mission, field_name, value);
+                        s2r_check_mission_field(mission, field_name, value);
+                        // power_preset = mission.power-model;
                         return true;
                     }
                 }
@@ -144,6 +149,10 @@ export component MainWindow inherits Window {
                         debug("Edit power_preset", power_preset);
                         show_power_preset_list = false;
                         power_preset_display_mode = "Update";
+                    }
+                    remove_power_preset(idx) => {
+                        debug("index.slint remove power_preset:{idx}");
+                        s2r_remove_power_preset(power_preset_index);
                     }
                     show_create_power_preset => {
                         show_power_preset_list = false;
@@ -169,6 +178,11 @@ export component MainWindow inherits Window {
                         debug("index.slint update power_preset", power_preset);
                         s2r_update_power_preset(power_preset_index, power_preset);
                         show_power_preset_list = true;
+                    }
+                    changed_float(field_name, value) => {
+                        debug("index.slint update power_preset power value");
+                        power_preset = s2r_change_power_preset_float_value(power_preset, field_name, value);
+                        return true;
                     }
                     changed_field(field_name, value) => {
                         debug("index.slint update power_preset", power_preset);

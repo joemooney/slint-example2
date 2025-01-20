@@ -22,6 +22,25 @@ impl traits::PowerPresetRepository for MockPowerPresetRepository {
         self.power_presets.borrow().len()
     }
 
+    fn preset_names(&self) -> Vec<String> {
+        let mut x: Vec<String> = self.power_presets.borrow().iter().map(|p| p.power_preset_name.to_owned()).collect();
+        x.sort();
+        x
+    }
+
+    fn find_power_preset(&self, preset_name: &str) -> Option<mvc::PowerPresetStruct> {
+        // Find the first matching element
+        let presets = self.power_presets.borrow();
+        let found = if let Some(item) = presets.iter().find(|item| item.power_preset_name.eq_ignore_ascii_case(preset_name.as_ref())) {
+            println!("Found: {:?}", item);
+            Some(item.clone())
+        } else {
+            println!("No match found");
+            None
+        };
+        found
+    }
+
     fn get_power_preset(&self, index: usize) -> Option<mvc::PowerPresetStruct> {
         self.power_presets.borrow().get(index).cloned()
     }
