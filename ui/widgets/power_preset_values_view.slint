@@ -54,19 +54,18 @@ export component PowerPresetValuesView {
             }
             Row {
                     power1-input := MyPowerValue {
-                        label: @tr("power1");
+                        label: power1_label;
                         value: preset.power1;
                         name: "power1";
                         changed_value(field_name, value) => {
-                            debug("chaning power1");
                             call_change_field(field_name, value);
                         }
                     }
                     power2-input := MyPowerValue {
                         name: "power2";
                         value: preset.power2;
-                        changed_value => {
-                            call_change_field(self.name, self.value);
+                        changed_value(field_name, value) => {
+                            call_change_field(field_name, value);
                         }
                     }
             }
@@ -74,15 +73,15 @@ export component PowerPresetValuesView {
                     power3-input := MyPowerValue {
                         name: "power3";
                         value: preset.power3;
-                        changed value => {
-                            call_change_field(self.name, self.value);
+                        changed_value(field_name, value) => {
+                            call_change_field(field_name, value);
                         }
                     }
                     power4-input := MyPowerValue {
                         name: "power4";
                         value: preset.power4;
-                        changed value => {
-                            call_change_field(self.name, self.value);
+                        changed_value(field_name, value) => {
+                            call_change_field(field_name, value);
                         }
                     }
             }
@@ -91,15 +90,15 @@ export component PowerPresetValuesView {
                     power5-input := MyPowerValue {
                         value: preset.power5;
                         name: "power5";
-                        changed value => {
-                            call_change_field(self.name, self.value);
+                        changed_value(field_name, value) => {
+                            call_change_field(field_name, value);
                         }
                     }
                     power6-input := MyPowerValue {
                         value: preset.power6;
                         name: "power6";
-                        changed value => {
-                            call_change_field(self.name, self.value);
+                        changed_value(field_name, value) => {
+                            call_change_field(field_name, value);
                         }
                     }
             }
@@ -108,15 +107,15 @@ export component PowerPresetValuesView {
                     power7-input := MyPowerValue {
                         value: preset.power7;
                         name: "power7";
-                        changed value => {
-                            call_change_field(self.name, self.value);
+                        changed_value(field_name, value) => {
+                            call_change_field(field_name, value);
                         }
                     }
                     power8-input := MyPowerValue {
                         value: preset.power8;
                         name: "power8";
-                        changed value => {
-                            call_change_field(self.name, self.value);
+                        changed_value(field_name, value) => {
+                            call_change_field(field_name, value);
                         }
                     }
             }
@@ -125,15 +124,15 @@ export component PowerPresetValuesView {
                 power9-input := MyPowerValue {
                     value: preset.power9;
                     name: "power9";
-                    changed value => {
-                            call_change_field(self.name, self.value);
+                    changed_value(field_name, value) => {
+                        call_change_field(field_name, value);
                     }
                 }
                 power10-input := MyPowerValue {
                     value: preset.power10;
                     name: "power10";
-                    changed value => {
-                            call_change_field(self.name, self.value);
+                    changed_value(field_name, value) => {
+                        call_change_field(field_name, value);
                     }
                 }
             }
