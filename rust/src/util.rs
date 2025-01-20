@@ -8,6 +8,11 @@ pub fn float_list_to_string(floats: &[f32]) -> String {
         .join(",")                 // Join the strings with commas
 }
 
+/// Converts a string float to Some(f32), None if invalid
+pub fn string_to_float(s: &str) -> Option<f32> {
+    s.trim().parse::<f32>().ok()
+}
+
 /// Converts a comma-separated string of floats to vector of floats, toss invalid
 pub fn string_to_float_list(float_list: &str) -> Vec<f32> {
     float_list

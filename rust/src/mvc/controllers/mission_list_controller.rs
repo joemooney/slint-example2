@@ -6,6 +6,7 @@ use slint::ModelNotify;
 use slint::ModelRc;
 use slint::ModelTracker;
 
+use crate::util;
 use crate::mvc;
 use crate::ui;
 // use crate::mvc::MissionStruct;
@@ -83,7 +84,24 @@ impl MissionListController {
             "mission_name" => mission.mission_name = value.as_ref().to_owned().into(),
             "mission_desc" => mission.mission_desc = value.as_ref().to_owned().into(),
             "power_preset_name" => self.switch_power_preset(&mut mission, value),
-            _ => {}
+            "power1" => {
+                println!("changing power1 to:{}", value.as_ref());
+                match util::string_to_float(value.as_ref()) {
+                    Some(f) => {
+                        mission.power_model.power1 = f;
+                        mission.power_model.preset_name = slint::SharedString::from("Custom");
+                        mission.power_model.preset_desc = slint::SharedString::from("customized");
+                        println!("power is now custom================================");
+                        // self.custom_power(&mut mission, value)
+                    }
+                    None => {
+                        println!("Invalid power value");
+                    }
+                }
+            }
+            _ => {
+                println!("No check for field:{} value:{}", field_name.as_ref(), value.as_ref());
+            }
         }
         mission
     }

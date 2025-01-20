@@ -433,6 +433,9 @@ export component CreatePowerPresetView {
                         power9-input := MySpinBox {
                             name: "power9";
                             value: preset.power9;
+                            minimum: 0;
+                            maximum: 30;
+                            step: 1;
                             changed value => {
                                 changed_float(self.name, self.value);
                             }
@@ -453,6 +456,9 @@ export component CreatePowerPresetView {
                         Rectangle { } // spacer
                         power10-input := MySpinBox {
                             name: "power10";
+                            minimum: 0;
+                            maximum: 30;
+                            step: 1;
                             value: preset.power10;
                             changed value => {
                                 changed_float(self.name, self.value);
