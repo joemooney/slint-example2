@@ -56,6 +56,7 @@ export component MainWindow inherits Window {
     callback update_power_preset();
     callback s2r_check_power_preset_field(PowerPresetSlintStruct, string, string) -> PowerPresetSlintStruct;
     callback s2r_change_power_preset_float_value(PowerPresetSlintStruct, string, float) -> PowerPresetSlintStruct;
+    callback s2r_change_power_preset_int_value(PowerPresetSlintStruct, string, int) -> PowerPresetSlintStruct;
     callback s2r_create_power_preset(PowerPresetSlintStruct);
     callback s2r_update_power_preset(int, PowerPresetSlintStruct);
     callback s2r_remove_power_preset(int);

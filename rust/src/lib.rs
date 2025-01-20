@@ -71,6 +71,12 @@ fn init() -> ui::MainWindow {
     });
 
     let ctrl = power_preset_model.clone();
+    main_window.on_s2r_change_power_preset_int_value(move |power_preset, field_name, value|{
+        println!("check power_preset field {:#?}", power_preset);
+        ctrl.change_preset_int_value(power_preset, field_name, value)
+    });
+
+    let ctrl = power_preset_model.clone();
     main_window.on_s2r_change_power_preset_float_value(move |power_preset, field_name, value|{
         println!("check power_preset field {:#?}", power_preset);
         ctrl.change_preset_float_value(power_preset, field_name, value)

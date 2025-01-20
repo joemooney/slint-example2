@@ -208,9 +208,24 @@ impl PowerPresetModel {
         self.notify.row_added(self.row_count() - 1, 1);
     }
 
+    pub fn change_preset_int_value(&self, mut preset: ui::PowerPresetSlintStruct, field_name: impl AsRef<str>, value: i32) -> ui::PowerPresetSlintStruct {
+        match field_name.as_ref() {
+            "power9" => preset.power9 = value,
+            "power10" => preset.power10 = value,
+            _ => {}
+        }
+        preset
+    }
     pub fn change_preset_float_value(&self, mut preset: ui::PowerPresetSlintStruct, field_name: impl AsRef<str>, value: f32) -> ui::PowerPresetSlintStruct {
         match field_name.as_ref() {
             "power1" => preset.power1 = value,
+            "power2" => preset.power2 = value,
+            "power3" => preset.power3 = value,
+            "power4" => preset.power4 = value,
+            "power5" => preset.power5 = value,
+            "power6" => preset.power6 = value,
+            "power7" => preset.power7 = value,
+            "power8" => preset.power8 = value,
             _ => {}
         }
         preset
