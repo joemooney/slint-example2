@@ -67,6 +67,9 @@ impl MissionListController {
 
     pub fn switch_power_preset(&self, mission: &mut ui::MissionSlintStruct, value: impl AsRef<str>) {
         // let power_preset_name = mission.power_model.preset_name.as_str();
+        if value.as_ref() == "Custom" {
+            return; // ignore special case
+        }
         let power_preset_name = value.as_ref();
         match self.power_preset_repo.find_power_preset(power_preset_name) {
             Some(power_preset) => {
@@ -84,11 +87,21 @@ impl MissionListController {
             "mission_name" => mission.mission_name = value.as_ref().to_owned().into(),
             "mission_desc" => mission.mission_desc = value.as_ref().to_owned().into(),
             "power_preset_name" => self.switch_power_preset(&mut mission, value),
-            "power1" => {
-                println!("changing power1 to:{}", value.as_ref());
+            "power1"|"power2"|"power3"|"power4"|"power5"|"power6"|"power7"|"power8" => {
+                println!("changing {} to:{}", field_name.as_ref(), value.as_ref());
                 match util::string_to_float(value.as_ref()) {
                     Some(f) => {
-                        mission.power_model.power1 = f;
+                        match field_name.as_ref() {
+                            "power1" => mission.power_model.power1 = f,
+                            "power2" => mission.power_model.power2 = f,
+                            "power3" => mission.power_model.power3 = f,
+                            "power4" => mission.power_model.power4 = f,
+                            "power5" => mission.power_model.power5 = f,
+                            "power6" => mission.power_model.power6 = f,
+                            "power7" => mission.power_model.power7 = f,
+                            "power8" => mission.power_model.power8 = f,
+                            _ => {},
+                        }
                         mission.power_model.preset_name = slint::SharedString::from("Custom");
                         mission.power_model.preset_desc = slint::SharedString::from("customized");
                         println!("power is now custom================================");

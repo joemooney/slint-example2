@@ -125,6 +125,7 @@ impl PowerPresetListController {
 
 #[derive(Clone)]
 pub struct PowerPresetModel {
+    pub mission_repo: Option<Rc<dyn mvc::traits::MissionRepository + 'static>>,
     repo: Rc<dyn mvc::traits::PowerPresetRepository>,
     notify: Rc<ModelNotify>,
     pub preset_names : Rc<slint::VecModel<slint::SharedString>>,
@@ -137,7 +138,8 @@ impl PowerPresetModel {
         let preset_model = Self { 
             repo,
             notify: Rc::new(Default::default()) ,
-            preset_names
+            preset_names,
+            mission_repo: None,
         };
         preset_model.update_preset_names();
         preset_model
@@ -159,7 +161,8 @@ impl PowerPresetModel {
     // }
 
     fn get_preset_names(names: Vec<String>) -> Vec<slint::SharedString> {
-        let v: Vec<slint::SharedString> = names.into_iter().map(|s| slint::SharedString::from(s)).collect();
+        let mut v: Vec<slint::SharedString> = names.into_iter().map(|s| slint::SharedString::from(s)).collect();
+        v.push(slint::SharedString::from("Custom"));
         v
     }
 
