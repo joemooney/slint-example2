@@ -22,6 +22,25 @@ impl traits::FrequencyPresetRepository for MockFrequencyPresetRepository {
         self.frequency_presets.borrow().len()
     }
 
+    fn preset_names(&self) -> Vec<String> {
+        let mut x: Vec<String> = self.frequency_presets.borrow().iter().map(|p| p.frequency_preset_name.to_owned()).collect();
+        x.sort();
+        x
+    }
+
+    fn find_power_preset(&self, preset_name: &str) -> Option<mvc::FrequencyPresetStruct> {
+        // Find the first matching element
+        let presets = self.frequency_presets.borrow();
+        let found = if let Some(item) = presets.iter().find(|item| item.frequency_preset_name.eq_ignore_ascii_case(preset_name.as_ref())) {
+            println!("Found: {:?}", item);
+            Some(item.clone())
+        } else {
+            println!("No match found");
+            None
+        };
+        found
+    }
+
     fn get_frequency_preset(&self, index: usize) -> Option<mvc::FrequencyPresetStruct> {
         self.frequency_presets.borrow().get(index).cloned()
     }

@@ -8,16 +8,18 @@ import { MissionSlintStruct } from "./adapters/mission_adapter.slint";
 // export { MissionAdapter }
 
 import { PowerPresetSlintStruct } from "./adapters/power_adapter.slint";
-import { PowerPresetListView, PowerPresetListAdapter } from "./views/power_preset_list_view.slint";
-export { PowerPresetListAdapter }
+import { PowerPresetListView } from "./views/power_preset_list_view.slint";
+// import { PowerPresetListView, PowerPresetListAdapter } from "./views/power_preset_list_view.slint";
+// export { PowerPresetListAdapter }
 
 import { CreatePowerPresetView } from "./views/create_power_preset_view.slint";
 import { PowerPresetAdapter } from "./adapters/power_adapter.slint";
 export { PowerPresetAdapter }
 
+import { FrequencyPresetSlintStruct } from "./adapters/frequency_adapter.slint";
 import { FrequencyPresetListView } from "./views/frequency_preset_list_view.slint";
-import { FrequencyPresetListAdapter } from "./views/frequency_preset_list_view.slint";
-export { FrequencyPresetListAdapter }
+// import { FrequencyPresetListAdapter } from "./views/frequency_preset_list_view.slint";
+// export { FrequencyPresetListAdapter }
 
 import { CreateFrequencyPresetView } from "./views/create_frequency_preset_view.slint";
 import { FrequencyPresetAdapter } from "./adapters/frequency_adapter.slint";
@@ -60,6 +62,27 @@ export component MainWindow inherits Window {
     callback s2r_create_power_preset(PowerPresetSlintStruct);
     callback s2r_update_power_preset(int, PowerPresetSlintStruct);
     callback s2r_remove_power_preset(int);
+    //======================================================================================
+    in-out property <string> frequency_preset_display_mode;
+    in-out property <int> frequency_preset_index;
+    in-out property <bool> show_frequency_preset_list: true;
+    in-out property <[FrequencyPresetSlintStruct]> frequency_presets: [
+        // this is only dummy data for the preview
+        { preset_name: "dummy_frequency1", preset_desc: "frequency#1", preset_details: "Nominal|band1" },
+        { preset_name: "dummy_frequency2", preset_desc: "frequency#2", preset_details: "Nominal|band2" },
+        { preset_name: "dummy_frequency3", preset_desc: "frequency#3", preset_details: "Nominal|band3" },
+    ];
+    in-out property <[string]> frequency_preset_names: ["dummy_preset1", "dummy_preset2", "dummy_preset3"];
+    in-out property <FrequencyPresetSlintStruct> frequency_preset;
+    in-out property <FrequencyPresetSlintStruct> default_frequency_preset: { preset_name: "", preset_desc: "", preset_details: "Nominal" };
+    callback create_frequency_preset();
+    callback update_frequency_preset();
+    callback s2r_check_frequency_preset_field(FrequencyPresetSlintStruct, string, string) -> FrequencyPresetSlintStruct;
+    callback s2r_change_frequency_preset_float_value(FrequencyPresetSlintStruct, string, float) -> FrequencyPresetSlintStruct;
+    callback s2r_change_frequency_preset_float_values(FrequencyPresetSlintStruct, string, string) -> FrequencyPresetSlintStruct;
+    callback s2r_create_frequency_preset(FrequencyPresetSlintStruct);
+    callback s2r_update_frequency_preset(int, FrequencyPresetSlintStruct);
+    callback s2r_remove_frequency_preset(int);
     //======================================================================================
     in-out property <string> mission_display_mode;
     in-out property <int> mission_index;
@@ -188,6 +211,63 @@ export component MainWindow inherits Window {
                     changed_field(field_name, value) => {
                         debug("index.slint update power_preset", power_preset);
                         power_preset = s2r_check_power_preset_field(power_preset, field_name, value);
+                        return true;
+                    }
+                }
+            }
+        }
+        Tab {
+            title: "Frequency Presets";
+            Rectangle {
+                if show_frequency_preset_list  : frequency_preset_list_view := FrequencyPresetListView {
+                    presets <=> frequency_presets;
+                    width: 100%;
+                    height: 100%;
+                    show_edit_frequency_preset(idx) => {
+                        debug("Edit frequency_preset", idx);
+                        frequency_preset_index = idx;
+                        frequency_preset = frequency_presets[idx];
+                        debug("Edit frequency_preset", frequency_preset);
+                        show_frequency_preset_list = false;
+                        frequency_preset_display_mode = "Update";
+                    }
+                    remove_frequency_preset(idx) => {
+                        debug("index.slint remove frequency_preset:{idx}");
+                        s2r_remove_frequency_preset(frequency_preset_index);
+                    }
+                    show_create_frequency_preset => {
+                        show_frequency_preset_list = false;
+                        frequency_preset = default_frequency_preset;
+                        frequency_preset_display_mode = "Create";
+                    }
+                }
+
+                if !show_frequency_preset_list  : create_frequency_preset_view := CreateFrequencyPresetView {
+                    display_mode <=> frequency_preset_display_mode;
+                    preset <=> frequency_preset;
+                    width: 100%;
+                    height: 100%;
+                    cancel_operation => {
+                        show_frequency_preset_list = true;
+                    }
+                    create_frequency_preset => {
+                        debug("index.slint create frequency_preset", frequency_preset);
+                        s2r_create_frequency_preset(frequency_preset);
+                        show_frequency_preset_list = true;
+                    }
+                    update_frequency_preset => {
+                        debug("index.slint update frequency_preset", frequency_preset);
+                        s2r_update_frequency_preset(frequency_preset_index, frequency_preset);
+                        show_frequency_preset_list = true;
+                    }
+                    changed_float(field_name, value) => {
+                        debug("index.slint update frequency_preset frequency value");
+                        frequency_preset = s2r_change_frequency_preset_float_value(frequency_preset, field_name, value);
+                        return true;
+                    }
+                    changed_field(field_name, value) => {
+                        debug("index.slint update frequency_preset", frequency_preset);
+                        frequency_preset = s2r_check_frequency_preset_field(frequency_preset, field_name, value);
                         return true;
                     }
                 }

@@ -6,34 +6,34 @@ export { PowerPresetSlintStruct }
 import { ActionButton } from "../widgets/action_button.slint";
 import { Icons, FontSettings } from "../widgets/styling.slint";
 
-export global PowerPresetListAdapter {
-    in property <int> font-size: 16;
-    in-out property <[PowerPresetSlintStruct]> xpower_presets: [
-        // this is only dummy data for the preview
-        { preset_name: "power_preset_1", preset_desc: "power_preset_#1", preset_details: "Power1details" },
-        { preset_name: "power_preset_2", preset_desc: "power_preset_#2", preset_details: "Power2details" },
-        { preset_name: "power_preset_3", preset_desc: "power_preset_#3", preset_details: "Power3details" },
-    ];
+// export global PowerPresetListAdapter {
+//     in property <int> font-size: 16;
+//     in-out property <[PowerPresetSlintStruct]> xpower_presets: [
+//         // this is only dummy data for the preview
+//         { preset_name: "power_preset_1", preset_desc: "power_preset_#1", preset_details: "Power1details" },
+//         { preset_name: "power_preset_2", preset_desc: "power_preset_#2", preset_details: "Power2details" },
+//         { preset_name: "power_preset_3", preset_desc: "power_preset_#3", preset_details: "Power3details" },
+//     ];
 
-    callback toggle-power-checked(/* index */ int);
-    callback remove-power-preset(/* index */ int);
-    callback show-create-power-preset();
-    callback show-edit-power-preset(/* index */ int);
+//     callback toggle-power-checked(/* index */ int);
+//     callback remove-power-preset(/* index */ int);
+//     callback show-create-power-preset();
+//     callback show-edit-power-preset(/* index */ int);
 
-    // this is only a dummy implementation for the preview
-    toggle-power-checked(index) => {
-        root.xpower_presets[index] = {
-            preset_name: root.item(index).preset_name,
-            preset_desc: root.item(index).preset_desc,
-            preset_details: root.item(index).preset_details,
-            checked: !root.item(index).checked
-        };
-    }
+//     // this is only a dummy implementation for the preview
+//     toggle-power-checked(index) => {
+//         root.xpower_presets[index] = {
+//             preset_name: root.item(index).preset_name,
+//             preset_desc: root.item(index).preset_desc,
+//             preset_details: root.item(index).preset_details,
+//             checked: !root.item(index).checked
+//         };
+//     }
 
-    function item(index: int) -> PowerPresetSlintStruct {
-        root.xpower_presets[index]
-    }
-}
+//     function item(index: int) -> PowerPresetSlintStruct {
+//         root.xpower_presets[index]
+//     }
+// }
 
 export component PowerPresetListView {
     in-out property <[PowerPresetSlintStruct]> presets: [

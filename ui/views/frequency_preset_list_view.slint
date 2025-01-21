@@ -5,35 +5,44 @@ export { FrequencyPresetSlintStruct }
 import { ActionButton } from "../widgets/action_button.slint";
 import { Icons, FontSettings } from "../widgets/styling.slint";
 
-export global FrequencyPresetListAdapter {
-    in-out property <[FrequencyPresetSlintStruct]> frequency_presets: [
-        // this is only dummy data for the preview
-        { preset_name: "frequency_preset1", preset_desc: "freq_preset#1", preset_details: "foo" },
-        { preset_name: "frequency_preset2", preset_desc: "freq_preset#2", preset_details: "foo" },
-        { preset_name: "frequency_preset3", preset_desc: "freq_preset#3", preset_details: "foo" },
-    ];
+// export global FrequencyPresetListAdapter {
+//     in-out property <[FrequencyPresetSlintStruct]> frequency_presets: [
+//         // this is only dummy data for the preview
+//         { preset_name: "frequency_preset1", preset_desc: "freq_preset#1", preset_details: "foo" },
+//         { preset_name: "frequency_preset2", preset_desc: "freq_preset#2", preset_details: "foo" },
+//         { preset_name: "frequency_preset3", preset_desc: "freq_preset#3", preset_details: "foo" },
+//     ];
 
-    callback toggle-frequency_preset-checked(/* index */ int);
-    callback remove-frequency_preset(/* index */ int);
-    callback show-create-frequency_preset();
-    callback show-edit-frequency_preset(/* index */ int);
+//     callback toggle-frequency_preset-checked(/* index */ int);
+//     callback remove-frequency_preset(/* index */ int);
+//     callback show-create-frequency_preset();
+//     callback show-edit-frequency_preset(/* index */ int);
 
-    // this is only a dummy implementation for the preview
-    toggle-frequency_preset-checked(index) => {
-        root.frequency_presets[index] = {
-            preset_name: root.item(index).preset_name,
-            preset_desc: root.item(index).preset_desc,
-            preset_details: root.item(index).preset_details,
-            checked: !root.item(index).checked
-        };
-    }
+//     // this is only a dummy implementation for the preview
+//     toggle-frequency_preset-checked(index) => {
+//         root.frequency_presets[index] = {
+//             preset_name: root.item(index).preset_name,
+//             preset_desc: root.item(index).preset_desc,
+//             preset_details: root.item(index).preset_details,
+//             checked: !root.item(index).checked
+//         };
+//     }
 
-    function item(index: int) -> FrequencyPresetSlintStruct {
-        root.frequency_presets[index]
-    }
-}
+//     function item(index: int) -> FrequencyPresetSlintStruct {
+//         root.frequency_presets[index]
+//     }
+// }
 
 export component FrequencyPresetListView {
+    in-out property <[FrequencyPresetSlintStruct]> presets: [
+        // this is only dummy data for the preview
+        { preset_name: "dummy_frequency1", preset_desc: "frequency#1", preset_details: "Nominal|band1" },
+        { preset_name: "dummy_frequency2", preset_desc: "frequency#2", preset_details: "Nominal|band2" },
+        { preset_name: "dummy_frequency3", preset_desc: "frequency#3", preset_details: "Nominal|band3" },
+    ];
+    callback show_edit_frequency_preset(int);
+    callback show_create_frequency_preset();
+    callback remove_frequency_preset(int);    
     VerticalBox {
         // vertical-stretch: 0;
         // horizontal-stretch: 0;
@@ -50,7 +59,7 @@ export component FrequencyPresetListView {
         // instance of widges/frequency_preset_list_view.slint
         FrequencyPresetListView {
             width: 100%;
-            model: FrequencyPresetListAdapter.frequency_presets;
+            model: presets;
             accessible-label: @tr("List of FrequencyPresets");
 
             // toggle(index) => {
@@ -58,10 +67,10 @@ export component FrequencyPresetListView {
             // }
             edit_preset(index) => {
                 debug("edit frequency preset");
-                FrequencyPresetListAdapter.show-edit-frequency-preset(index);
+                show_edit_frequency_preset(index);
             }
             remove(index) => {
-                FrequencyPresetListAdapter.remove-frequency_preset(index);
+                remove_frequency_preset(index);
             }
         }
 
@@ -73,7 +82,7 @@ export component FrequencyPresetListView {
                 accessible-label: @tr("Create New Frequency Preset");
 
                 clicked => {
-                    FrequencyPresetListAdapter.show-create-frequency_preset();
+                    show_create_frequency_preset();
                 }
             }
         }

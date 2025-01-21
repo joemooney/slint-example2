@@ -20,26 +20,27 @@ fn init() -> ui::MainWindow {
     // let mission_model = Rc::new(slint::VecModel::from())
     let main_window = ui::MainWindow::new().unwrap();
 
-    let mission_repo = mvc::mission_repo();
+    let mission_repo = Rc::new(mvc::mission_repo());
     let power_preset_repo = Rc::new(mvc::power_preset_repo());
+    let frequency_preset_repo = Rc::new(mvc::frequency_preset_repo());
 
     //--------------------------------------------------------------------------------------------
-    let mission_controller = mvc::MissionListController::new(mission_repo, power_preset_repo.clone());
-    main_window.set_missions(mission_controller.ui_mapping());
+    let mission_model = mvc::MissionModel::new(mission_repo.clone(), power_preset_repo.clone());
+    main_window.set_missions(mission_model.ui_mapping());
 
-    let ctrl = mission_controller.clone();
+    let ctrl = mission_model.clone();
     main_window.on_s2r_create_mission(move |mission|{
         println!("create mission {:#?}", mission);
         ctrl.create_mission(mission);
     });
 
-    let ctrl = mission_controller.clone();
+    let ctrl = mission_model.clone();
     main_window.on_s2r_update_mission(move |index, mission|{
         println!("update mission {:#?}", mission);
         ctrl.update_mission(index as usize, mission);
     });
 
-    let ctrl = mission_controller.clone();
+    let ctrl = mission_model.clone();
     let ui  = main_window.as_weak();
     main_window.on_s2r_check_mission_field(move |mission, field_name, value|{
         println!("check mission field {:#?}", mission);
@@ -48,7 +49,7 @@ fn init() -> ui::MainWindow {
         x
     });
     //--------------------------------------------------------------------------------------------
-    let power_preset_model = mvc::PowerPresetModel::new(power_preset_repo.clone());
+    let power_preset_model = mvc::PowerPresetModel::new(power_preset_repo.clone(), mission_repo.clone());
     main_window.set_power_presets(power_preset_model.ui_mapping());
     main_window.set_power_preset_names(power_preset_model.preset_names.clone().into());
 
@@ -86,6 +87,46 @@ fn init() -> ui::MainWindow {
     main_window.on_s2r_check_power_preset_field(move |power_preset, field_name, value|{
         println!("check power_preset field {:#?}", power_preset);
         ctrl.check_preset_field(power_preset, field_name, value)
+    });
+    //--------------------------------------------------------------------------------------------
+    let frequency_preset_model = mvc::FrequencyPresetModel::new(frequency_preset_repo.clone(), mission_repo.clone());
+    main_window.set_frequency_presets(frequency_preset_model.ui_mapping());
+    main_window.set_frequency_preset_names(frequency_preset_model.preset_names.clone().into());
+
+    let ctrl = frequency_preset_model.clone();
+    main_window.on_s2r_create_frequency_preset(move |frequency_preset|{
+        println!("create frequency_preset {:#?}", frequency_preset);
+        ctrl.create_preset(frequency_preset);
+    });
+
+    let ctrl = frequency_preset_model.clone();
+    main_window.on_s2r_update_frequency_preset(move |index, frequency_preset|{
+        println!("update frequency_preset {:#?}", frequency_preset);
+        ctrl.update_preset(index as usize, frequency_preset);
+    });
+
+    let ctrl = frequency_preset_model.clone();
+    main_window.on_s2r_remove_frequency_preset(move |index|{
+        println!("remove frequency_preset {index}");
+        ctrl.remove_preset(index as usize);
+    });
+
+    let ctrl = frequency_preset_model.clone();
+    main_window.on_s2r_change_frequency_preset_float_values(move |frequency_preset, field_name, value|{
+        println!("check frequency_preset field {:#?}", frequency_preset);
+        ctrl.change_preset_float_values(frequency_preset, field_name, value)
+    });
+
+    let ctrl = frequency_preset_model.clone();
+    main_window.on_s2r_change_frequency_preset_float_value(move |frequency_preset, field_name, value|{
+        println!("check frequency_preset field {:#?}", frequency_preset);
+        ctrl.change_preset_float_value(frequency_preset, field_name, value)
+    });
+
+    let ctrl = frequency_preset_model.clone();
+    main_window.on_s2r_check_frequency_preset_field(move |frequency_preset, field_name, value|{
+        println!("check frequency_preset field {:#?}", frequency_preset);
+        ctrl.check_preset_field(frequency_preset, field_name, value)
     });
     //--------------------------------------------------------------------------------------------
 
