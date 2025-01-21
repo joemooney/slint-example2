@@ -11,34 +11,47 @@ export { SelectionListViewItem }
 import { ActionButton } from "../widgets/action_button.slint";
 import { Icons, FontSettings } from "../widgets/styling.slint";
 
-export global TaskListAdapter {
-    in-out property <[SelectionListViewItem]> tasks: [
-        // this is only dummy data for the preview
-        { text: "Contribute to Slint", description: "2024/11/11 13:13", priority: "low" },
-        { text: "Open a discussion on GitHub", description: "2024/11/11 13:13", priority: "high" },
-        { text: "Write some documentation", description: "2024/11/11 13:13", priority: "med" }
-    ];
+import { TaskSlintStruct } from "../adapters/task_adapter.slint";
+export { TaskSlintStruct }
 
-    callback toggle-task-checked(/* index */ int);
-    callback remove-task(/* index */ int);
-    callback show-create-task();
 
-    // this is only a dummy implementation for the preview
-    toggle-task-checked(index) => {
-        root.tasks[index] = {
-            text: root.item(index).text,
-            priority: root.item(index).priority,
-            checked: !root.item(index).checked,
-            description: root.item(index).description
-        };
-    }
+// export global TaskListAdapter {
+//     in-out property <[SelectionListViewItem]> tasks: [
+//         // this is only dummy data for the preview
+//         { title: "Contribute to Slint", description: "2024/11/11 13:13", priority: "low" },
+//         { title: "Open a discussion on GitHub", description: "2024/11/11 13:13", priority: "high" },
+//         { title: "Write some documentation", description: "2024/11/11 13:13", priority: "med" }
+//     ];
 
-    function item(index: int) -> SelectionListViewItem {
-        root.tasks[index]
-    }
-}
+//     callback toggle-task-checked(/* index */ int);
+//     callback remove-task(/* index */ int);
+//     callback show-create-task();
+
+//     // this is only a dummy implementation for the preview
+//     toggle-task-checked(index) => {
+//         root.tasks[index] = {
+//             text: root.item(index).text,
+//             priority: root.item(index).priority,
+//             checked: !root.item(index).checked,
+//             description: root.item(index).description
+//         };
+//     }
+
+//     function item(index: int) -> SelectionListViewItem {
+//         root.tasks[index]
+//     }
+// }
 
 export component TaskListView {
+    in-out property <[TaskSlintStruct]> tasks: [
+        // this is only dummy data for the preview
+        {title: "task1", priority: "low", description: "desc", due_date: "1/1/1", done: true, }
+    ];
+    callback show_edit_task(int);
+    callback toggle_task_checked(int);
+    callback show_create_task();
+    callback remove_task(int);
+
     VerticalBox {
         // vertical-stretch: 0;
         // horizontal-stretch: 0;
@@ -54,15 +67,15 @@ export component TaskListView {
 
         SelectionListView {
             width: 100%;
-            model: TaskListAdapter.tasks;
+            model: tasks;
             accessible-label: @tr("List of Tasks");
 
             toggle(index) => {
-                TaskListAdapter.toggle-task-checked(index);
+                toggle_task_checked(index);
             }
 
             remove(index) => {
-                TaskListAdapter.remove-task(index);
+                remove_task(index);
             }
         }
 
@@ -74,7 +87,7 @@ export component TaskListView {
                 accessible-label: @tr("Create New Task");
 
                 clicked => {
-                    TaskListAdapter.show-create-task();
+                    show_create_task();
                 }
             }
         }

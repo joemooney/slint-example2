@@ -1,0 +1,8 @@
+@rust-attr(derive(serde::Serialize, serde::Deserialize))
+export struct TaskSlintStruct {
+    title: string,
+    priority: string,
+    description: string,
+    due_date: string,
+    done: bool,
+}

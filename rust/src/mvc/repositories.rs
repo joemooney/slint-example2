@@ -29,13 +29,14 @@ pub fn date_time_repo() -> impl traits::DateTimeRepository + Clone {
 
 pub fn task_repo() -> impl traits::TaskRepository + Clone {
     MockTaskRepository::new(vec![
-        TaskStruct { title: "Power on".into(), done: false, due_date: 1717986537151, priority: "low".into() },
-        TaskStruct { title: "Talk".into(), done: false, due_date: 1717986537151, priority: "med".into() },
+        TaskStruct { title: "Power on".into(), description: "desc".into(), done: false, due_date: "1/1/1".into(), priority: "low".into() },
+        TaskStruct { title: "Talk".into(), description: "desc".into(), done: false, due_date: "1/1/1".into(), priority: "med".into() },
         TaskStruct {
             title: "Power off".into(),
             done: false, 
+            description: "desc".into(), 
             priority: "high".into(),
-            due_date: 1717986537151,
+            due_date: "1/1/1".into(),
         },
     ])
 }

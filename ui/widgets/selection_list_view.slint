@@ -6,22 +6,27 @@ import { StateLayer } from "./state_layer.slint";
 import { FocusTouchArea } from "./focus_touch_area.slint";
 import { SizeSettings, TodoPalette, FontSettings, Icons } from "styling.slint";
 import { IconButton } from "icon_button.slint";
+import { TaskSlintStruct } from "../adapters/task_adapter.slint";
 
 @rust-attr(derive(serde::Serialize, serde::Deserialize))
 export struct SelectionListViewItem {
-    text: string,
+    title: string,
     priority: string,
-    checked: bool,
     description: string,
+    due_date: string,
+    done: bool,
 }
 
 export component SelectionListViewItemDelegate {
+    in property <[TaskSlintStruct]> tasks;
+
     callback toggle;
     callback remove;
+    callback edit_task;
 
-    in property <string> text <=> text-label.text;
+    in property <string> title <=> title-label.text;
     in property <string> description <=> description-label.text;
-    in-out property <bool> checked <=> check-box.checked;
+    in-out property <bool> done <=> check-box.checked;
     in property <string> priority <=> priority-label.text;
 
     min-width: content-layer.min-width;
@@ -60,7 +65,7 @@ export component SelectionListViewItemDelegate {
 
         VerticalLayout {
             alignment: center;
-            text-label := Text {
+            title-label := Text {
                 horizontal-alignment: left;
                 color: TodoPalette.foreground;
                 font-size: FontSettings.body-strong.font-size;
@@ -86,6 +91,15 @@ export component SelectionListViewItemDelegate {
 
         IconButton {
             y: (parent.height - self.height) / 2;
+            icon: Icons.settings;
+            accessible-label: @tr("Edit Preset");
+            clicked => {
+                root.edit_task();
+            }
+        }
+
+        IconButton {
+            y: (parent.height - self.height) / 2;
             icon: Icons.remove;
             accessible-label: @tr("Delete Task");
             clicked => {
@@ -96,25 +110,28 @@ export component SelectionListViewItemDelegate {
 }
 
 export component SelectionListView inherits ListView {
-    in property <[SelectionListViewItem]> model;
+    in property <[TaskSlintStruct]> model;
 
     callback toggle(/* index */ int);
     callback remove(/* index */ int);
+    callback edit_task(/* index */ int);
 
     accessible-role: list;
 
     for item[index] in root.model: SelectionListViewItemDelegate {
         width: root.visible-width;
-        text: item.text;
+        title: item.title;
         priority: item.priority;
         description: item.description;
-        checked: item.checked;
+        done: item.done;
         toggle => {
             root.toggle(index);
         }
-
         remove => {
             root.remove(index);
+        }
+        edit_task => {
+            root.edit_task(index);
         }
     }
 }

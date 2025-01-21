@@ -25,11 +25,10 @@ import { CreateFrequencyPresetView } from "./views/create_frequency_preset_view.
 import { FrequencyPresetAdapter } from "./adapters/frequency_adapter.slint";
 export { FrequencyPresetAdapter }
 
-import { TaskListView, TaskListAdapter } from "./views/task_list_view.slint";
-export { TaskListAdapter }
+import { TaskListView } from "./views/task_list_view.slint";
 
-import { CreateTaskView, CreateTaskAdapter } from "./views/create_task_view.slint";
-export { CreateTaskAdapter }
+import { CreateTaskView } from "./views/create_task_view.slint";
+import { TaskSlintStruct } from "./adapters/task_adapter.slint";
 
 import { AnimationSettings } from "./widgets/styling.slint";
 import { Tabs } from "tabs.slint";
@@ -101,6 +100,26 @@ export component MainWindow inherits Window {
     callback s2r_check_mission_field(MissionSlintStruct, string, string) -> MissionSlintStruct;
     callback s2r_create_mission(MissionSlintStruct);
     callback s2r_update_mission(int, MissionSlintStruct);
+    callback s2r_remove_mission(int);
+    //======================================================================================
+    in-out property <string> task_display_mode;
+    in-out property <int> task_index;
+    in-out property <bool> show_task_list: true;
+    in-out property <[TaskSlintStruct]> tasks: [
+        // this is only dummy data for the preview
+        { title: "dummy_task1", priority: "low", description: "task#1", due_date: "1/1/1", done: false },
+        { title: "dummy_task2", priority: "low", description: "task#2", due_date: "1/1/1", done: false },
+        { title: "dummy_task3", priority: "low", description: "task#3", due_date: "1/1/1", done: false },
+    ];
+    in-out property <TaskSlintStruct> task;
+    in-out property <TaskSlintStruct> default_task: { title: "", priority: "", description: "", due_date: "", done: false };
+
+    callback create_task();
+    callback update_task();
+    callback s2r_check_task_field(TaskSlintStruct, string, string) -> TaskSlintStruct;
+    callback s2r_create_task(TaskSlintStruct);
+    callback s2r_update_task(int, TaskSlintStruct);
+    callback s2r_remove_task(int);
     //======================================================================================
 
     // Tabs {}
@@ -268,6 +287,58 @@ export component MainWindow inherits Window {
                     changed_field(field_name, value) => {
                         debug("index.slint update frequency_preset", frequency_preset);
                         frequency_preset = s2r_check_frequency_preset_field(frequency_preset, field_name, value);
+                        return true;
+                    }
+                }
+            }
+        }
+        Tab {
+            title: "Tasks";
+            Rectangle {
+                if show_task_list  : task_list_view := TaskListView {
+                    tasks <=> tasks;
+                    width: 100%;
+                    height: 100%;
+                    show_edit_task(idx) => {
+                        debug("Edit task", idx);
+                        task_index = idx;
+                        task = tasks[idx];
+                        debug("Edit task", task);
+                        show_task_list = false;
+                        task_display_mode = "Update";
+                    }
+                    remove_task(idx) => {
+                        debug("index.slint remove task:{idx}");
+                        s2r_remove_task(task_index);
+                    }
+                    show_create_task => {
+                        show_task_list = false;
+                        task = default_task;
+                        task_display_mode = "Create";
+                    }
+                }
+
+                if !show_task_list  : create_task_view := CreateTaskView {
+                    display_mode <=> task_display_mode;
+                    task <=> task;
+                    width: 100%;
+                    height: 100%;
+                    cancel_operation => {
+                        show_task_list = true;
+                    }
+                    create_task => {
+                        debug("index.slint create task", task);
+                        s2r_create_task(task);
+                        show_task_list = true;
+                    }
+                    update_task => {
+                        debug("index.slint update task", task);
+                        s2r_update_task(task_index, task);
+                        show_task_list = true;
+                    }
+                    changed_field(field_name, value) => {
+                        debug("index.slint update task", task);
+                        task = s2r_check_task_field(task, field_name, value);
                         return true;
                     }
                 }
